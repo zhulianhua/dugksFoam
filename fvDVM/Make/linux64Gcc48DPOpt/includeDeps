@@ -1,0 +1,7 @@
+include BCs/calculatedMaxwellFvPatchField/calculatedMaxwellFvPatchFields.dep
+include BCs/maxwellWallFvsPatchField/maxwellWallFvsPatchFields.dep
+include BCs/mixedFvsPatchField/mixedFvsPatchFields.dep
+include BCs/DVMsymmetryFvsPatchField/DVMsymmetryFvsPatchFields.dep
+include BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.dep
+include discreteVelocity/discreteVelocity.dep
+include fvDVM/fvDVM.dep

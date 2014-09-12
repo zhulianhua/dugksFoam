@@ -1,0 +1,8 @@
+DEPENDENCIES = \
+BCs/calculatedMaxwellFvPatchField/calculatedMaxwellFvPatchFields.dep\
+BCs/maxwellWallFvsPatchField/maxwellWallFvsPatchFields.dep\
+BCs/mixedFvsPatchField/mixedFvsPatchFields.dep\
+BCs/DVMsymmetryFvsPatchField/DVMsymmetryFvsPatchFields.dep\
+BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.dep\
+discreteVelocity/discreteVelocity.dep\
+fvDVM/fvDVM.dep

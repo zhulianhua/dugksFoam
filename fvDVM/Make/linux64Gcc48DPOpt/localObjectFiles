@@ -1,0 +1,8 @@
+LOCAL_OBJECTS = \
+calculatedMaxwellFvPatchFields.o\
+maxwellWallFvsPatchFields.o\
+mixedFvsPatchFields.o\
+DVMsymmetryFvsPatchFields.o\
+zeroGradientFvsPatchFields.o\
+discreteVelocity.o\
+fvDVM.o
