@@ -123,6 +123,14 @@ class fvDVM
         //- interg... value is  dXi^D, but dim is dXi^3
         const dimensionedScalar dXiCellSize_;
 
+        //- use or not use macro flux
+        const word macroFlux_;
+
+        //- res
+        const scalar res_;
+        //- nStep for res
+        const label checkSteps_;
+
         //- Gas: R
         const dimensionedScalar R_;
 
@@ -155,6 +163,9 @@ class fvDVM
 
         //- surface heat flux vector
         surfaceVectorField qSurf_;
+
+        //- surface stress tensor $\int \bm \xi_ \bm \xi_ d \bm \xi$
+        surfaceTensorField stressSurf_;
 
         //- volume heat flux vector
         volVectorField qVol_;
@@ -288,6 +299,8 @@ class fvDVM
 
         //- Heat flux field at cell face
         inline const surfaceVectorField& qSurf() const;
+        //- stress tensor at cell face
+        inline const surfaceTensorField& stressSurf() const;
 
         //- tau at cell face
         inline const surfaceScalarField& tauSurf() const;
@@ -303,6 +316,10 @@ class fvDVM
         inline dimensionedScalar xiMin() const;
 
         inline dimensionedScalar R() const;
+
+        inline scalar res() const;
+
+        inline label checkSteps() const;
 
         inline scalar omega() const;
 

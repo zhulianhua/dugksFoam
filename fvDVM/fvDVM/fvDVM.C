@@ -326,6 +326,12 @@ void Foam::fvDVM::updateMacroSurf()
     Usurf_ = dimensionedVector("0", Usurf_.dimensions(), vector(0, 0, 0));
     Tsurf_ = dimensionedScalar("0", Tsurf_.dimensions(), 0);
     qSurf_ = dimensionedVector("0", qSurf_.dimensions(), vector(0, 0, 0));
+    stressSurf_ = dimensionedTensor
+        (
+            "0", 
+            stressSurf_.dimensions(), 
+            pTraits<tensor>::zero
+        );
 
     // Conserved variable, now zero as the prime variable 
     // has been set to zero
@@ -365,10 +371,14 @@ void Foam::fvDVM::updateMacroSurf()
                  magSqr(c)*dv.gSurf() 
                + dv.hSurf()
              );
+        stressSurf_ += 
+            dXiCellSize_*dv.weight()*dv.gSurf()*c*c;
     }
 
     //- correction for bar to original
     qSurf_ = 2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT()*Pr_)*qSurf_;
+    stressSurf_ = 
+        2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT())*stressSurf_;
 }
 
 
@@ -385,27 +395,92 @@ void Foam::fvDVM::updateGHtildeVol()
         DV_[DVid].updateGHtildeVol();
 }
 
-
 void Foam::fvDVM::updateMacroVol()
 {
-    rhoVol_ =  dimensionedScalar("0", rhoVol_.dimensions(), 0);
-    Uvol_ = dimensionedVector("0", Uvol_.dimensions(), vector(0, 0, 0));
-    Tvol_ = dimensionedScalar("0", Tvol_.dimensions(), 0);
-    qVol_ = dimensionedVector("0", qVol_.dimensions(), vector(0, 0, 0));
 
     volVectorField rhoUvol = rhoVol_*Uvol_;
-    volScalarField rhoEvol = rhoVol_*magSqr(Uvol_);
+    volScalarField rhoEvol = rhoVol_*(magSqr(Uvol_) + (KInner_ + 3)/2.0*R_*Tvol_);
 
-    forAll(DV_, dvi)
+    qVol_ = dimensionedVector("0", qVol_.dimensions(), vector(0, 0, 0));
+
+    if(macroFlux_ == "no") // update cell macro by moment from DF
     {
-        discreteVelocity& dv = DV_[dvi];
-        rhoVol_ += dXiCellSize_*dv.weight()*dv.gTildeVol();
-        rhoUvol += dXiCellSize_*dv.weight()*dv.gTildeVol()*dv.xi();
-        rhoEvol += 0.5*dXiCellSize_*dv.weight()
-           *(
-                magSqr(dv.xi())*dv.gTildeVol() 
-              + dv.hTildeVol()
-            );
+        rhoVol_ =  dimensionedScalar("0", rhoVol_.dimensions(), 0);
+        rhoUvol = dimensionedVector("0", rhoUvol.dimensions(), vector(0, 0, 0));
+        rhoEvol = dimensionedScalar("0", rhoEvol.dimensions(), 0);
+
+        forAll(DV_, dvi)
+        {
+            discreteVelocity& dv = DV_[dvi];
+            rhoVol_ += dXiCellSize_*dv.weight()*dv.gTildeVol();
+            rhoUvol += dXiCellSize_*dv.weight()*dv.gTildeVol()*dv.xi();
+            rhoEvol += 0.5*dXiCellSize_*dv.weight()
+               *(
+                    magSqr(dv.xi())*dv.gTildeVol() 
+                  + dv.hTildeVol()
+                );
+        }
+    }
+    else // update by macro flux
+    {
+        const labelUList& owner = mesh_.owner();
+        const labelUList& neighbour = mesh_.neighbour();
+        const vectorField Sf = mesh_.Sf();
+        const scalarField V = mesh_.V();
+        const scalar dt = time_.deltaTValue();
+
+        // internal faces
+        forAll(owner, facei)
+        {
+            const label own = owner[facei];
+            const label nei = neighbour[facei];
+            rhoVol_[own] -= (rhoSurf_[facei]*Usurf_[facei]&Sf[facei])*dt/V[own];
+            rhoVol_[nei] += (rhoSurf_[facei]*Usurf_[facei]&Sf[facei])*dt/V[nei];
+            rhoUvol[own] -= (rhoSurf_[facei]*Usurf_[facei]*Usurf_[facei]
+                            + stressSurf_[facei])&Sf[facei]*dt/V[own];
+            rhoUvol[nei] += (rhoSurf_[facei]*Usurf_[facei]*Usurf_[facei]
+                            + stressSurf_[facei])&Sf[facei]*dt/V[nei];
+            scalar rhoEsurf = 
+                rhoSurf_[facei]
+               *(magSqr(Usurf_[facei]) + (KInner_ + 3)/2.0*R_.value()*Tsurf_[facei]);
+
+            rhoEvol[own] -= (rhoEsurf*Usurf_[facei] + qSurf_[facei])
+                            &Sf[facei]*dt/V[own];
+            rhoEvol[nei] += (rhoEsurf*Usurf_[facei] + qSurf_[facei])
+                            &Sf[facei]*dt/V[nei];
+        }
+        // boundary faces
+        forAll(rhoSurf_.boundaryField(), patchi)
+        {
+            const fvsPatchField<scalar>& rhoSurfPatch =
+                rhoSurf_.boundaryField()[patchi];
+            const fvsPatchField<vector>& UsurfPatch =
+                Usurf_.boundaryField()[patchi];
+            const fvsPatchField<scalar>& TsurfPatch =
+                Tsurf_.boundaryField()[patchi];
+            const fvsPatchField<tensor>& stressSurfPatch =
+                stressSurf_.boundaryField()[patchi];
+            const fvsPatchField<vector>& qSurfPatch =
+                qSurf_.boundaryField()[patchi];
+            const fvsPatchField<vector>& SfPatch =
+                mesh_.Sf().boundaryField()[patchi];
+
+            const labelUList& pOwner = mesh_.boundary()[patchi].faceCells();
+            forAll(pOwner, pFacei)
+            {
+                const label own = pOwner[pFacei];
+                rhoVol_[own] -= (rhoSurfPatch[pFacei]*UsurfPatch[pFacei]
+                               &SfPatch[pFacei])*dt/V[own];
+                rhoUvol[own] -= (rhoSurfPatch[pFacei]*UsurfPatch[pFacei]*UsurfPatch[pFacei]
+                                + stressSurfPatch[pFacei])&Sf[pFacei]*dt/V[own];
+                scalar rhoEsurf = 
+                    rhoSurfPatch[pFacei]
+                    *(magSqr(UsurfPatch[pFacei]) + (KInner_ + 3)/2.0*R_.value()*TsurfPatch[pFacei]);
+
+                rhoEvol[own] -= (rhoEsurf*UsurfPatch[pFacei] + qSurfPatch[pFacei])
+                               &SfPatch[pFacei]*dt/V[own];
+            }
+        }
     }
 
     //- get Prim. from Consv.
@@ -417,7 +492,6 @@ void Foam::fvDVM::updateMacroVol()
     Tvol_.correctBoundaryConditions();
     //- Note for maxwell wall, the operation here update 
     //- the boundary rho field but it's meaningless.
-
 
     //- The vol macro field's boundary field is meanless!
     //rhoVol_.correctBoundaryConditions(); 
@@ -505,19 +579,18 @@ Foam::fvDVM::fvDVM
     fvDVMparas_(subOrEmptyDict("fvDVMparas")),
     gasProperties_(subOrEmptyDict("gasProperties")),
     nXiPerDim_(readLabel(fvDVMparas_.lookup("nDV"))),
-
     xiMax_(fvDVMparas_.lookup("xiMax")),
     xiMin_(fvDVMparas_.lookup("xiMin")),
-
     dXi_((xiMax_-xiMin_)/(nXiPerDim_ - 1)),
-
     dXiCellSize_
     (
         "dXiCellSize",
         pow(dimLength/dimTime, 3),
         scalar(1.0)
     ),
-
+    macroFlux_(fvDVMparas_.lookupOrDefault("macroFlux", word("no"))),
+    res_(fvDVMparas_.lookupOrDefault("res", 1.0e-12)),
+    checkSteps_(fvDVMparas_.lookupOrDefault("checkSteps", 100)),
     R_(gasProperties_.lookup("R")),
     omega_(readScalar(gasProperties_.lookup("omega"))),
     Tref_(gasProperties_.lookup("Tref")),
@@ -577,6 +650,19 @@ Foam::fvDVM::fvDVM
         mesh_,
         dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
     ),
+    stressSurf_
+    (
+        IOobject
+        (
+            "stressSurf",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh_,
+        dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
+    ),
     qVol_
     (
         IOobject
@@ -635,11 +721,8 @@ void Foam::fvDVM::evolution()
 {
     updateGHbarPvol();
     updateGHbarSurf();
-
     updateMaxwellWallRho();
-
     updateGHbarSurfMaxwellWallIn();
-
     updateMacroSurf();
     updateGHsurf();
     updateGHtildeVol();

@@ -903,28 +903,28 @@ void Foam::discreteVelocity::equilibriumShakhov
     label K = dvm_.KInner();
     dimensionedScalar vUnit("vUnit", dimLength/dimTime, 1);
 
-    if(myDVid_ == 10) 
-        Info << ">>>> Debug  1" << endl;
+    //if(myDVid_ == 10) 
+        //Info << ">>>> Debug  1" << endl;
     GeometricField<scalar, PatchType, GeoMesh> cSqrByRT 
         = magSqr(U - xi_)/(R*T);
 
-    if(myDVid_ == 10) 
-        Info << ">>>> Debug  2" << endl;
+    //if(myDVid_ == 10) 
+        //Info << ">>>> Debug  2" << endl;
     GeometricField<scalar, PatchType, GeoMesh> cqBy5pRT 
         = ((xi_ - U)&q)/(5.0*rho*R*T*R*T);
 
-    if(myDVid_ == 10) 
-        Info << ">>>> Debug  3" << endl;
+    //if(myDVid_ == 10) 
+        //Info << ">>>> Debug  3" << endl;
     GeometricField<scalar, PatchType, GeoMesh> gEqBGK 
         = rho/pow(sqrt(2.0*pi*R*T),D)*exp(-cSqrByRT/2.0)/pow(vUnit, 3-D);
 
-    if(myDVid_ == 10) 
-        Info << ">>>> Debug  4" << endl;
+    //if(myDVid_ == 10) 
+        //Info << ">>>> Debug  4" << endl;
 
     gEq = ( 1.0 + (1.0 - Pr)*cqBy5pRT*(cSqrByRT - D - 2.0) )*gEqBGK;
     hEq = ( (K + 3.0 - D) + (1.0 - Pr)*cqBy5pRT*((cSqrByRT - D)*(K + 3.0 - D) - 2*K) )*gEqBGK*R*T;
-    if(myDVid_ == 10) 
-        Info << ">>>> Debug  5" << endl;
+    //if(myDVid_ == 10) 
+        //Info << ">>>> Debug  5" << endl;
 }
 
 

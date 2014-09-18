@@ -39,3 +39,17 @@ volVectorField U
     ),
     mesh
 );
+
+volScalarField Told
+(
+    IOobject
+    (
+        "Told",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh,
+    dimensionedScalar( "1", T.dimensions(), 1)
+);

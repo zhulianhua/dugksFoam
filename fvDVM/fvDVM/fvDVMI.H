@@ -84,6 +84,11 @@ inline const Foam::surfaceVectorField& Foam::fvDVM::qSurf() const
     return qSurf_;
 }
 
+inline const Foam::surfaceTensorField& Foam::fvDVM::stressSurf() const
+{
+    return stressSurf_;
+}
+
 inline const Foam::surfaceScalarField& Foam::fvDVM::tauSurf() const
 {
     return tauSurf_;
@@ -107,6 +112,16 @@ inline Foam::dimensionedScalar Foam::fvDVM::xiMax() const
 inline Foam::dimensionedScalar Foam::fvDVM::xiMin() const
 {
     return xiMin_;
+}
+
+inline Foam::scalar Foam::fvDVM::res() const
+{
+    return res_;
+}
+
+inline Foam::label Foam::fvDVM::checkSteps() const
+{
+    return checkSteps_;
 }
 
 inline Foam::dimensionedScalar Foam::fvDVM::R() const

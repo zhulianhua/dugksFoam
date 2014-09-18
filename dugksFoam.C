@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 
     Info<< "\nStarting time loop\n" << endl;
 
+    label It = 0;
     while (runTime.run())
     {
         #include "CourantNo.H" // calculate the Co num
@@ -56,6 +57,7 @@ int main(int argc, char *argv[])
         #include "setDeltaT.H"
 
         runTime++;
+        It++;
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
@@ -66,6 +68,7 @@ int main(int argc, char *argv[])
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"
             << nl << endl;
+        //if(It%100 == 0)
     }
 
     Info<< "End\n" << endl;
