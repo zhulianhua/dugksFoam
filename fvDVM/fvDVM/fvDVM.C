@@ -309,6 +309,8 @@ void Foam::fvDVM::updateGHbarSurf()
 void Foam::fvDVM::updateMaxwellWallRho()
 {
     rhoVol_.correctBoundaryConditions(); //Bug here !!!
+    Info << ">>>> Deubg " << nl << "rho at up   " << rhoVol_.boundaryField()[0][0];
+    Info << ">>>> Deubg " << nl << "rho at left " << rhoVol_.boundaryField()[1][0];
 }
 
 
