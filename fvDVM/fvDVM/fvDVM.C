@@ -309,8 +309,6 @@ void Foam::fvDVM::updateGHbarSurf()
 void Foam::fvDVM::updateMaxwellWallRho()
 {
     rhoVol_.correctBoundaryConditions(); //Bug here !!!
-    Info << ">>>> Deubg " << nl << "rho at up   " << rhoVol_.boundaryField()[0][0];
-    Info << ">>>> Deubg " << nl << "rho at left " << rhoVol_.boundaryField()[1][0];
 }
 
 
@@ -357,8 +355,17 @@ void Foam::fvDVM::updateMacroSurf()
     Usurf_ = rhoUsurf/rhoSurf_;
     Tsurf_ = (rhoEsurf - 0.5*rhoSurf_*magSqr(Usurf_))/((KInner_ + 3)/2.0*R_*rhoSurf_);
 
+    //Info << "----------------------------- At update Macro -----------------------" << endl;
+    //Info << ">>>> Deubg checked" << "T   at up: " << Tsurf_.boundaryField()[0][3] << endl;
+    //Info << ">>>> Deubg checked" << "U   at up: " << Usurf_.boundaryField()[0][3] << endl;
+    //Info << ">>>> Deubg        " << "rho at up: " << rhoSurf_.boundaryField()[0][3] << endl;
+    //Info << "---------------------------------------------------------------------" << nl << endl ;
+
     //- update tau
     tauSurf_ = updateTau(Tsurf_, rhoSurf_);
+
+    //Info << ">>>> Debug        " << "mu_ref :   " <<muRef_.value() << endl;
+    //Info << ">>>> Debug        " << "Tau at up: " << tauSurf_.boundaryField()[0][1] << endl;
 
     //- peculiar vel.
     surfaceVectorField c = Usurf_;
@@ -381,6 +388,7 @@ void Foam::fvDVM::updateMacroSurf()
     qSurf_ = 2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT()*Pr_)*qSurf_;
     stressSurf_ = 
         2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT())*stressSurf_;
+    //Info << ">>>> Deubg        " << nl << "q   at up: " << qSurf_.boundaryField()[0][3] << endl;
 }
 
 
@@ -545,9 +553,6 @@ Foam::fvDVM::updateTau
         )
     );
     GeometricField<scalar, PatchType, GeoMesh>& tau = tTau();
-    //Debug
-    Info << "Tmax = " <<  gMax(T) << endl;
-    Info << "Tmin = " <<  gMin(T) << endl;
     tau = muRef_*exp(omega_*log(T/Tref_))/rho/T/R_;
     return tTau;
 }

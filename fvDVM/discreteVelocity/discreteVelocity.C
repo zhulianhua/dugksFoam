@@ -657,6 +657,16 @@ void Foam::discreteVelocity::updateGHbarSurfMaxwellWallIn()
                             UvolPatch[facei],
                             TvolPatch[facei]
                         );
+
+                    //if( myDVid_ == 11*28 + 11 && patchi == 0 && facei == 1)
+                    //{
+                        //Info <<"-----After  maxwell In --------------------------" << endl;
+                        //Info <<">>>> Deubg : " << "gSurf  = " 
+                             //<< gSurfPatch[facei] << endl;
+                        //Info <<"rho = " << rhoVolPatch[facei] << endl;
+                        //Info <<"-------------------------------------------------" << endl;
+                    //}
+
                     //set hSurf at maxwellWall to zero! , WRONG!!!
                     hSurfPatch[facei] = 
                         gSurfPatch[facei]*(dvm_.R().value()*TvolPatch[facei])
@@ -669,7 +679,6 @@ void Foam::discreteVelocity::updateGHbarSurfMaxwellWallIn()
 
 void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
 {
-
     forAll(gSurf_.boundaryField(), patchi)
     {
         if (gSurf_.boundaryField()[patchi].type() == "symmetryPlane")
@@ -752,13 +761,17 @@ void Foam::discreteVelocity::updateGHsurf()
         dvm_.qSurf() 
     );
 
+    //if( myDVid_ == 11*28 + 11 )
+    //{
+        //Info <<">>>> Deubg : " << "gSurf Beofre " << gSurf_.boundaryField()[0][2] << endl;
+    //}
+
     gSurf_ = (1.0 - relaxFactor)*gSurf_ + relaxFactor*gEq;
     hSurf_ = (1.0 - relaxFactor)*hSurf_ + relaxFactor*hEq;
     // NOTE: here the boundar face value are not computed
 
-
     vector xii = xi_.value();
-    // We do it mannuly for the outgoing DF
+    // We do it mannuly for the outgoing DF?? Why??
     forAll(gSurf_.boundaryField(), patchi)
     {
         fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
@@ -771,37 +784,35 @@ void Foam::discreteVelocity::updateGHsurf()
         fvsPatchScalarField& relaxFactorPatch = 
             relaxFactor.boundaryField()[patchi];
 
-
         forAll(gSurfPatch, facei)
         {
-            //- all direction for processor BC type
-            //if( gSurfPatch.type() == "processor" )
-            //{
-                //gSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
-                    //*gSurfPatch[facei]
-                   //+ relaxFactorPatch[facei]*gEqPatch[facei];
-                //hSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
-                    //*hSurfPatch[facei]
-                   //+ relaxFactorPatch[facei]*hEqPatch[facei];
-            //}
-            //outgoing, for mixed/maxwell/zeroGradient wall b.c.
-            //else
-            //{
-                
-                if ( (xii&(SfPatch[facei])) > 0  )
-                {
-                    gSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
-                        *gSurfPatch[facei]
-                       + relaxFactorPatch[facei]*gEqPatch[facei];
-                    hSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
-                        *hSurfPatch[facei]
-                       + relaxFactorPatch[facei]*hEqPatch[facei];
-                }
-
-            //}
-
+            //if ( (xii&(SfPatch[facei])) > 0  )
+            {
+                gSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
+                    *gSurfPatch[facei]
+                   + relaxFactorPatch[facei]*gEqPatch[facei];
+                hSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
+                    *hSurfPatch[facei]
+                   + relaxFactorPatch[facei]*hEqPatch[facei];
+                //if( myDVid_ == 11*28 + 11 && patchi == 0 && facei ==1)
+                //{
+                    //Info <<"------update origin f --------------------------" << endl;
+                    //Info <<">>>> Deubg : " << "wb  = " << relaxFactorPatch[facei] << endl;
+                    //Info <<">>>> Deubg : " << "dt  = " << 2*h << endl;
+                    //Info <<">>>> Deubg : " << "tau = " 
+                         //<< dvm_.tauSurf().boundaryField()[0][1] << endl;
+                    //Info <<"-------------------------------------------------" << nl << endl;
+                //}
+            }
         }
     }
+
+    //if( myDVid_ == 11*28 + 11 )
+    //{
+        //Info <<">>>> Deubg : " << "gSurf  After " << gSurf_.boundaryField()[0][2] << endl;
+        //Info <<">>>> Deubg : " << "hSurf  After " << hSurf_.boundaryField()[0][2] << endl;
+        //Info << xi_ << endl;
+    //}
 }
 
 void Foam::discreteVelocity::updateGHtildeVol()
@@ -847,8 +858,15 @@ void Foam::discreteVelocity::updateGHtildeVol()
                *hSurfPatch[pFacei]*dt/V[own];
         }
     }
-}
 
+    //if(myDVid_ == 11*28+11)
+    //{
+        //Info << "--- after update h/g TildeVol----------------------" << endl;
+        //Info << " gTilde = "  << gTildeVol_[13] << endl;
+        //Info << " hTilde = "  << hTildeVol_[13] << endl;
+        //Info << "---------------------------------------------------" << endl;
+    //}
+}
 
 template <template<class> class PatchType, class GeoMesh> 
 Foam::tmp<Foam::GeometricField<Foam::scalar, PatchType, GeoMesh> >
@@ -885,7 +903,6 @@ Foam::discreteVelocity::equilibriumMaxwell
     return tEqu;
 }
 
-
 template <template<class> class PatchType, class GeoMesh> 
 void Foam::discreteVelocity::equilibriumShakhov
 (
@@ -903,30 +920,18 @@ void Foam::discreteVelocity::equilibriumShakhov
     label K = dvm_.KInner();
     dimensionedScalar vUnit("vUnit", dimLength/dimTime, 1);
 
-    //if(myDVid_ == 10) 
-        //Info << ">>>> Debug  1" << endl;
     GeometricField<scalar, PatchType, GeoMesh> cSqrByRT 
         = magSqr(U - xi_)/(R*T);
 
-    //if(myDVid_ == 10) 
-        //Info << ">>>> Debug  2" << endl;
     GeometricField<scalar, PatchType, GeoMesh> cqBy5pRT 
         = ((xi_ - U)&q)/(5.0*rho*R*T*R*T);
 
-    //if(myDVid_ == 10) 
-        //Info << ">>>> Debug  3" << endl;
     GeometricField<scalar, PatchType, GeoMesh> gEqBGK 
         = rho/pow(sqrt(2.0*pi*R*T),D)*exp(-cSqrByRT/2.0)/pow(vUnit, 3-D);
 
-    //if(myDVid_ == 10) 
-        //Info << ">>>> Debug  4" << endl;
-
     gEq = ( 1.0 + (1.0 - Pr)*cqBy5pRT*(cSqrByRT - D - 2.0) )*gEqBGK;
     hEq = ( (K + 3.0 - D) + (1.0 - Pr)*cqBy5pRT*((cSqrByRT - D)*(K + 3.0 - D) - 2*K) )*gEqBGK*R*T;
-    //if(myDVid_ == 10) 
-        //Info << ">>>> Debug  5" << endl;
 }
-
 
 void Foam::discreteVelocity::equilibriumMaxwell
 (
