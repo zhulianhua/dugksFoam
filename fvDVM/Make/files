@@ -4,6 +4,8 @@ BCs/mixedFvsPatchField/mixedFvsPatchFields.C
 BCs/DVMsymmetryFvsPatchField/DVMsymmetryFvsPatchFields.C
 BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.C
 discreteVelocity/discreteVelocity.C
+zeroBoundaryGrad/zeroBoundaryVectors.C
+zeroBoundaryGrad/zeroBoundaryGrads.C
 fvDVM/fvDVM.C
 
 LIB = $(FOAM_USER_LIBBIN)/libdugksFoam

@@ -2,6 +2,9 @@ SOURCE = \
 BCs/calculatedMaxwellFvPatchField/calculatedMaxwellFvPatchFields.C\
 BCs/maxwellWallFvsPatchField/maxwellWallFvsPatchFields.C\
 BCs/mixedFvsPatchField/mixedFvsPatchFields.C\
+BCs/DVMsymmetryFvsPatchField/DVMsymmetryFvsPatchFields.C\
 BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.C\
 discreteVelocity/discreteVelocity.C\
+zeroBoundaryGrad/zeroBoundaryVectors.C\
+zeroBoundaryGrad/zeroBoundaryGrads.C\
 fvDVM/fvDVM.C

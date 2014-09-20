@@ -36,7 +36,7 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * Constructors * * * * * * * * * * * * * * //
 
-Foam::zeroBoundaryVectors::leastSquaresVectors(const fvMesh& mesh)
+Foam::zeroBoundaryVectors::zeroBoundaryVectors(const fvMesh& mesh)
 :
     MeshObject<fvMesh, Foam::MoveableMeshObject, zeroBoundaryVectors>(mesh),
     pVectors_
@@ -74,7 +74,7 @@ Foam::zeroBoundaryVectors::leastSquaresVectors(const fvMesh& mesh)
 
 // * * * * * * * * * * * * * * * * Destructor * * * * * * * * * * * * * * * //
 
-Foam::zeroBoundaryVectors::~leastSquaresVectors()
+Foam::zeroBoundaryVectors::~zeroBoundaryVectors()
 {}
 
 

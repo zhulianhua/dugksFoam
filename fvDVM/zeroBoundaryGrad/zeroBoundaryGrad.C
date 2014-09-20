@@ -79,7 +79,7 @@ Foam::fv::zeroBoundaryGrad<Type>::calcGrad
     GeometricField<GradType, fvPatchField, volMesh>& lsGrad = tlsGrad();
 
     // Get reference to least square vectors
-    const zeroBoundaryVectors& lsv = leastSquaresVectors::New(mesh);
+    const zeroBoundaryVectors& lsv = zeroBoundaryVectors::New(mesh);
 
     const surfaceVectorField& ownLs = lsv.pVectors();
     const surfaceVectorField& neiLs = lsv.nVectors();
@@ -133,7 +133,6 @@ Foam::fv::zeroBoundaryGrad<Type>::calcGrad
             //}
         }
     }
-
 
     lsGrad.correctBoundaryConditions();
     gaussGrad<Type>::correctBoundaryConditions(vsf, lsGrad);

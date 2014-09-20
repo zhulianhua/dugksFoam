@@ -354,19 +354,8 @@ void Foam::fvDVM::updateMacroSurf()
 
     Usurf_ = rhoUsurf/rhoSurf_;
     Tsurf_ = (rhoEsurf - 0.5*rhoSurf_*magSqr(Usurf_))/((KInner_ + 3)/2.0*R_*rhoSurf_);
-
-    //Info << "----------------------------- At update Macro -----------------------" << endl;
-    //Info << ">>>> Deubg checked" << "T   at up: " << Tsurf_.boundaryField()[0][3] << endl;
-    //Info << ">>>> Deubg checked" << "U   at up: " << Usurf_.boundaryField()[0][3] << endl;
-    //Info << ">>>> Deubg        " << "rho at up: " << rhoSurf_.boundaryField()[0][3] << endl;
-    //Info << "---------------------------------------------------------------------" << nl << endl ;
-
     //- update tau
     tauSurf_ = updateTau(Tsurf_, rhoSurf_);
-
-    //Info << ">>>> Debug        " << "mu_ref :   " <<muRef_.value() << endl;
-    //Info << ">>>> Debug        " << "Tau at up: " << tauSurf_.boundaryField()[0][1] << endl;
-
     //- peculiar vel.
     surfaceVectorField c = Usurf_;
 
@@ -388,7 +377,6 @@ void Foam::fvDVM::updateMacroSurf()
     qSurf_ = 2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT()*Pr_)*qSurf_;
     stressSurf_ = 
         2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT())*stressSurf_;
-    //Info << ">>>> Deubg        " << nl << "q   at up: " << qSurf_.boundaryField()[0][3] << endl;
 }
 
 
@@ -407,10 +395,8 @@ void Foam::fvDVM::updateGHtildeVol()
 
 void Foam::fvDVM::updateMacroVol()
 {
-
     volVectorField rhoUvol = rhoVol_*Uvol_;
     volScalarField rhoEvol = rhoVol_*(magSqr(Uvol_) + (KInner_ + 3)/2.0*R_*Tvol_);
-
     qVol_ = dimensionedVector("0", qVol_.dimensions(), vector(0, 0, 0));
 
     if(macroFlux_ == "no") // update cell macro by moment from DF
@@ -508,7 +494,6 @@ void Foam::fvDVM::updateMacroVol()
 
     //- update tau
     tauVol_ = updateTau(Tvol_, rhoVol_);
-
     //- peculiar vel.
     volVectorField c = Uvol_;
 
@@ -712,7 +697,7 @@ Foam::fvDVM::fvDVM
 {
     initialiseDV();
     setCalculatedMaxwellRhoBC();
-    updateTau(Tvol_, rhoVol_); //calculate the tau at cell when init
+    tauVol_ = updateTau(Tvol_, rhoVol_); //calculate the tau at cell when init
     Usurf_ = fvc::interpolate(Uvol_, "linear"); // for first time Dt calculation.
 }
 

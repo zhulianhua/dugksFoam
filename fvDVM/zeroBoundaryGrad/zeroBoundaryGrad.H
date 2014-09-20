@@ -59,7 +59,7 @@ class zeroBoundaryGrad
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
-        zeroBoundaryGrad(const leastSquaresGrad&);
+        zeroBoundaryGrad(const zeroBoundaryGrad&);
 
         //- Disallow default bitwise assignment
         void operator=(const zeroBoundaryGrad&);

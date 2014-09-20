@@ -400,8 +400,8 @@ void Foam::discreteVelocity::updateGHbarPvol()
     gBarPvol_ = (1.0 - relaxFactor)*gTildeVol_ + relaxFactor*gEq;
     hBarPvol_ = (1.0 - relaxFactor)*hTildeVol_ + relaxFactor*hEq;
 
-    gBarPvol_.correctBoundaryConditions(); // NOTE: check if the newly defined zeroGradientFvsPatchField 
-    hBarPvol_.correctBoundaryConditions();
+    //gBarPvol_.correctBoundaryConditions(); // NOTE: check if the newly defined zeroGradientFvsPatchField 
+    //hBarPvol_.correctBoundaryConditions();
 }
 
 void Foam::discreteVelocity::updateGHbarSurf()
@@ -658,15 +658,6 @@ void Foam::discreteVelocity::updateGHbarSurfMaxwellWallIn()
                             TvolPatch[facei]
                         );
 
-                    //if( myDVid_ == 11*28 + 11 && patchi == 0 && facei == 1)
-                    //{
-                        //Info <<"-----After  maxwell In --------------------------" << endl;
-                        //Info <<">>>> Deubg : " << "gSurf  = " 
-                             //<< gSurfPatch[facei] << endl;
-                        //Info <<"rho = " << rhoVolPatch[facei] << endl;
-                        //Info <<"-------------------------------------------------" << endl;
-                    //}
-
                     //set hSurf at maxwellWall to zero! , WRONG!!!
                     hSurfPatch[facei] = 
                         gSurfPatch[facei]*(dvm_.R().value()*TvolPatch[facei])
@@ -761,11 +752,6 @@ void Foam::discreteVelocity::updateGHsurf()
         dvm_.qSurf() 
     );
 
-    //if( myDVid_ == 11*28 + 11 )
-    //{
-        //Info <<">>>> Deubg : " << "gSurf Beofre " << gSurf_.boundaryField()[0][2] << endl;
-    //}
-
     gSurf_ = (1.0 - relaxFactor)*gSurf_ + relaxFactor*gEq;
     hSurf_ = (1.0 - relaxFactor)*hSurf_ + relaxFactor*hEq;
     // NOTE: here the boundar face value are not computed
@@ -794,25 +780,9 @@ void Foam::discreteVelocity::updateGHsurf()
                 hSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
                     *hSurfPatch[facei]
                    + relaxFactorPatch[facei]*hEqPatch[facei];
-                //if( myDVid_ == 11*28 + 11 && patchi == 0 && facei ==1)
-                //{
-                    //Info <<"------update origin f --------------------------" << endl;
-                    //Info <<">>>> Deubg : " << "wb  = " << relaxFactorPatch[facei] << endl;
-                    //Info <<">>>> Deubg : " << "dt  = " << 2*h << endl;
-                    //Info <<">>>> Deubg : " << "tau = " 
-                         //<< dvm_.tauSurf().boundaryField()[0][1] << endl;
-                    //Info <<"-------------------------------------------------" << nl << endl;
-                //}
             }
         }
     }
-
-    //if( myDVid_ == 11*28 + 11 )
-    //{
-        //Info <<">>>> Deubg : " << "gSurf  After " << gSurf_.boundaryField()[0][2] << endl;
-        //Info <<">>>> Deubg : " << "hSurf  After " << hSurf_.boundaryField()[0][2] << endl;
-        //Info << xi_ << endl;
-    //}
 }
 
 void Foam::discreteVelocity::updateGHtildeVol()
@@ -859,13 +829,6 @@ void Foam::discreteVelocity::updateGHtildeVol()
         }
     }
 
-    //if(myDVid_ == 11*28+11)
-    //{
-        //Info << "--- after update h/g TildeVol----------------------" << endl;
-        //Info << " gTilde = "  << gTildeVol_[13] << endl;
-        //Info << " hTilde = "  << hTildeVol_[13] << endl;
-        //Info << "---------------------------------------------------" << endl;
-    //}
 }
 
 template <template<class> class PatchType, class GeoMesh> 
