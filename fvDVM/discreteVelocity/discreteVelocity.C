@@ -400,8 +400,8 @@ void Foam::discreteVelocity::updateGHbarPvol()
     gBarPvol_ = (1.0 - relaxFactor)*gTildeVol_ + relaxFactor*gEq;
     hBarPvol_ = (1.0 - relaxFactor)*hTildeVol_ + relaxFactor*hEq;
 
-    //gBarPvol_.correctBoundaryConditions(); // NOTE: check if the newly defined zeroGradientFvsPatchField 
-    //hBarPvol_.correctBoundaryConditions();
+    gBarPvol_.correctBoundaryConditions(); // NOTE: check if the newly defined zeroGradientFvsPatchField 
+    hBarPvol_.correctBoundaryConditions();
 }
 
 void Foam::discreteVelocity::updateGHbarSurf()

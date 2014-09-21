@@ -5,4 +5,6 @@ BCs/mixedFvsPatchField/mixedFvsPatchFields.dep\
 BCs/DVMsymmetryFvsPatchField/DVMsymmetryFvsPatchFields.dep\
 BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.dep\
 discreteVelocity/discreteVelocity.dep\
+zeroBoundaryGrad/zeroBoundaryVectors.dep\
+zeroBoundaryGrad/zeroBoundaryGrads.dep\
 fvDVM/fvDVM.dep
