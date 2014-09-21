@@ -772,7 +772,7 @@ void Foam::discreteVelocity::updateGHsurf()
 
         forAll(gSurfPatch, facei)
         {
-            //if ( (xii&(SfPatch[facei])) > 0  )
+            if ( (xii&(SfPatch[facei])) > 0  ) // Here, if delted , the free stream BC may bo s problem
             {
                 gSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
                     *gSurfPatch[facei]
