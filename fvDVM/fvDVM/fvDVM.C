@@ -355,8 +355,28 @@ void Foam::fvDVM::updateMacroSurf()
     Usurf_ = rhoUsurf/rhoSurf_;
     Tsurf_ = (rhoEsurf - 0.5*rhoSurf_*magSqr(Usurf_))/((KInner_ + 3)/2.0*R_*rhoSurf_);
     //- update tau
+
+    //DEBUG
+    if(Pstream::myProcNo() == 0)
+    {
+        Info << ">>>> Debug" << endl;
+        forAll(rhoSurf_.boundaryField(), patchi)
+        {
+            const fvsPatchField<scalar>& TsurfPatch =
+                Tsurf_.boundaryField()[patchi];
+            forAll(TsurfPatch, facei)
+            {
+                if(TsurfPatch[facei] < 0)
+                    Info << "error here " << "P=" 
+                        << mesh_.boundaryMesh()[patchi].name()
+                        << " F=" << facei << endl;
+            }
+        }
+    }
+
     tauSurf_ = updateTau(Tsurf_, rhoSurf_);
     //- peculiar vel.
+
     surfaceVectorField c = Usurf_;
 
     //-get heat flux
