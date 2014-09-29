@@ -648,7 +648,7 @@ void Foam::discreteVelocity::updateGHbarSurfMaxwellWallIn()
             forAll(gSurfPatch, facei)
             {
                 vector faceSf = SfPatch[facei];
-                if ((xii & faceSf) < 0) // incomming
+                if ((xii & faceSf) <= 0) // incomming
                 {
                     // set to maxwellian
                     gSurfPatch[facei] = rhoVolPatch[facei]
