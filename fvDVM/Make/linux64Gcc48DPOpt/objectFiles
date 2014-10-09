@@ -7,4 +7,6 @@ $(OBJECTS_DIR)/zeroGradientFvsPatchFields.o\
 $(OBJECTS_DIR)/discreteVelocity.o\
 $(OBJECTS_DIR)/zeroBoundaryVectors.o\
 $(OBJECTS_DIR)/zeroBoundaryGrads.o\
+$(OBJECTS_DIR)/VenkatakrishnanSlopeMulti.o\
+$(OBJECTS_DIR)/VenkatakrishnanLimitedGrads.o\
 $(OBJECTS_DIR)/fvDVM.o

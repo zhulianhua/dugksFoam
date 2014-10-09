@@ -7,4 +7,6 @@ zeroGradientFvsPatchFields.o\
 discreteVelocity.o\
 zeroBoundaryVectors.o\
 zeroBoundaryGrads.o\
+VenkatakrishnanSlopeMulti.o\
+VenkatakrishnanLimitedGrads.o\
 fvDVM.o

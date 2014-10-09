@@ -7,4 +7,6 @@ BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.dep\
 discreteVelocity/discreteVelocity.dep\
 zeroBoundaryGrad/zeroBoundaryVectors.dep\
 zeroBoundaryGrad/zeroBoundaryGrads.dep\
+Venkatakrishnan/VenkatakrishnanSlopeMulti/VenkatakrishnanSlopeMulti.dep\
+Venkatakrishnan/VenkatakrishnanLimitedGrad/VenkatakrishnanLimitedGrads.dep\
 fvDVM/fvDVM.dep

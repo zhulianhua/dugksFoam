@@ -55,7 +55,7 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
 
     tmp<volVectorField> tGrad = basicGradScheme_().calcGrad(vsf, name);
 
-    if (k_ < SMALL)
+    if (VenSlope_.k() < SMALL)
     {
         return tGrad;
     }
@@ -67,6 +67,7 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
 
     const volVectorField& C = mesh.C();
     const surfaceVectorField& Cf = mesh.Cf();
+    const scalarField& V = mesh.V();
 
     scalarField maxVsf(vsf.internalField());
     scalarField minVsf(vsf.internalField());
@@ -127,28 +128,35 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
     // create limiter
     scalarField limiter(vsf.internalField().size(), 1.0);
 
+    scalar limiterTemp = 1.0;
+
     forAll(owner, facei)
     {
         label own = owner[facei];
         label nei = neighbour[facei];
 
         // owner side
-        limitFace
-        (
-            limiter[own],
-            maxVsf[own],
-            minVsf[own],
-            (Cf[facei] - C[own]) & g[own]
-        );
+        limiterTemp = 
+            VenSlope_.limitFace
+            (
+                V[own],
+                maxVsf[own],
+                minVsf[own],
+                (Cf[facei] - C[own])&g[own]
+            );
+
+        limiter[own] = (limiter[own] < limiterTemp)?limiter[own]:limiterTemp;
 
         // neighbour side
-        limitFace
-        (
-            limiter[nei],
-            maxVsf[nei],
-            minVsf[nei],
-            (Cf[facei] - C[nei]) & g[nei]
-        );
+        limiterTemp = 
+            VenSlope_.limitFace
+            (
+                V[nei],
+                maxVsf[nei],
+                minVsf[nei],
+                (Cf[facei] - C[nei])&g[nei]
+            );
+        limiter[nei] = limiter[nei] < limiterTemp?limiter[nei]:limiterTemp;
     }
 
     forAll(bsf, patchi)
@@ -160,13 +168,15 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
         {
             label own = pOwner[pFacei];
 
-            limitFace
-            (
-                limiter[own],
-                maxVsf[own],
-                minVsf[own],
-                (pCf[pFacei] - C[own]) & g[own]
-            );
+            limiterTemp = 
+                VenSlope_.limitFace
+                (
+                    V[own],
+                    maxVsf[own],
+                    minVsf[own],
+                    (pCf[pFacei] - C[own])&g[own]
+                );
+            limiter[own] = (limiter[own] < limiterTemp)?limiter[own]:limiterTemp;
         }
     }
 
@@ -187,3 +197,17 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
 
 
 // ************************************************************************* //
+
+template<>
+Foam::tmp<Foam::volTensorField>
+Foam::fv::VenkatakrishnanLimitedGrad<Foam::vector>::calcGrad
+(
+    const volVectorField& vsf,
+    const word& name
+) const
+{
+    //NOTE by lhzhu, nothing done here for vector field 
+    //const fvMesh& mesh = vsf.mesh();
+    tmp<volTensorField> tGrad = basicGradScheme_().calcGrad(vsf, name);
+    return tGrad;
+}

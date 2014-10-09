@@ -6,4 +6,6 @@ include BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.dep
 include discreteVelocity/discreteVelocity.dep
 include zeroBoundaryGrad/zeroBoundaryVectors.dep
 include zeroBoundaryGrad/zeroBoundaryGrads.dep
+include Venkatakrishnan/VenkatakrishnanSlopeMulti/VenkatakrishnanSlopeMulti.dep
+include Venkatakrishnan/VenkatakrishnanLimitedGrad/VenkatakrishnanLimitedGrads.dep
 include fvDVM/fvDVM.dep

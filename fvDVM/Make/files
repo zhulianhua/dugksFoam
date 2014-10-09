@@ -6,6 +6,8 @@ BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.C
 discreteVelocity/discreteVelocity.C
 zeroBoundaryGrad/zeroBoundaryVectors.C
 zeroBoundaryGrad/zeroBoundaryGrads.C
+Venkatakrishnan/VenkatakrishnanSlopeMulti/VenkatakrishnanSlopeMulti.C
+Venkatakrishnan/VenkatakrishnanLimitedGrad/VenkatakrishnanLimitedGrads.C
 fvDVM/fvDVM.C
 
 LIB = $(FOAM_USER_LIBBIN)/libdugksFoam

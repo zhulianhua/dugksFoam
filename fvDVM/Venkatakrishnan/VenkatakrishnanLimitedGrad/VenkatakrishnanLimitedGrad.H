@@ -41,6 +41,7 @@ SourceFiles
 #define VenkatakrishnanLimitedGrad_H
 
 #include "gradScheme.H"
+#include "VenkatakrishnanSlopeMulti.C"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -63,10 +64,13 @@ class VenkatakrishnanLimitedGrad
 {
     // Private Data
 
-        tmp<fv::gradScheme<Type> > basicGradScheme_;
+
 
         //- Limiter coefficient
-        const scalar k_;
+        tmp<fv::gradScheme<Type> > basicGradScheme_;
+
+        //- Venkatakrishnan slope for every edge
+        VenkatakrishnanSlopeMultiLimiter VenSlope_;
 
 
     // Private Member Functions
@@ -91,18 +95,8 @@ public:
         :
             gradScheme<Type>(mesh),
             basicGradScheme_(fv::gradScheme<Type>::New(mesh, schemeData)),
-            k_(readScalar(schemeData))
+            VenSlope_(schemeData)
         {
-            if (k_ < 0 || k_ > 1)
-            {
-                FatalIOErrorIn
-                (
-                    "VenkatakrishnanLimitedGrad(const fvMesh&, Istream& schemeData)",
-                    schemeData
-                )   << "coefficient = " << k_
-                    << " should be >= 0 and <= 1"
-                    << exit(FatalIOError);
-            }
         }
 
 
