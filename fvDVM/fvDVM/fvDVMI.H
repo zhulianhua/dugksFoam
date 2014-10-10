@@ -114,15 +114,15 @@ inline Foam::dimensionedScalar Foam::fvDVM::xiMin() const
     return xiMin_;
 }
 
-inline Foam::scalar Foam::fvDVM::res() const
-{
-    return res_;
-}
+//inline Foam::scalar Foam::fvDVM::res() const
+//{
+    //return res_;
+//}
 
-inline Foam::label Foam::fvDVM::checkSteps() const
-{
-    return checkSteps_;
-}
+//inline Foam::label Foam::fvDVM::checkSteps() const
+//{
+    //return checkSteps_;
+//}
 
 inline Foam::dimensionedScalar Foam::fvDVM::R() const
 {

@@ -582,8 +582,8 @@ Foam::fvDVM::fvDVM
         scalar(1.0)
     ),
     macroFlux_(fvDVMparas_.lookupOrDefault("macroFlux", word("no"))),
-    res_(fvDVMparas_.lookupOrDefault("res", 1.0e-12)),
-    checkSteps_(fvDVMparas_.lookupOrDefault("checkSteps", 100)),
+    //res_(fvDVMparas_.lookupOrDefault("res", 1.0e-12)),
+    //checkSteps_(fvDVMparas_.lookupOrDefault("checkSteps", 100)),
     R_(gasProperties_.lookup("R")),
     omega_(readScalar(gasProperties_.lookup("omega"))),
     Tref_(gasProperties_.lookup("Tref")),

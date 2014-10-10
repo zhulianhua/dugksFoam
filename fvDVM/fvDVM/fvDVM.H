@@ -127,9 +127,9 @@ class fvDVM
         const word macroFlux_;
 
         //- res
-        const scalar res_;
+        ////const scalar res_;
         //- nStep for res
-        const label checkSteps_;
+        ////const label checkSteps_;
 
         //- Gas: R
         const dimensionedScalar R_;

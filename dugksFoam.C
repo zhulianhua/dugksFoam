@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     #include "createTime.H"
     #include "createMesh.H"
     #include "createFields.H"
-    #include "readTimeControls.H"
+    #include "readTimeControlsExplicit.H"
 
     fvDVM dvm(rho, U, T);
 
@@ -50,10 +50,10 @@ int main(int argc, char *argv[])
     Info<< "\nStarting time loop\n" << endl;
 
     label It = 0;
-    while (runTime.run())
+    while (runTime.run() && TemperatureChange > convergeTol)
     {
         #include "CourantNo.H" // calculate the Co num
-        #include "readTimeControls.H"
+        #include "readTimeControlsExplicit.H"
         #include "setDeltaT.H"
 
         runTime++;
@@ -65,10 +65,16 @@ int main(int argc, char *argv[])
 
         runTime.write();
 
-        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+        Info<< "Step =" << It << "  ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"
             << nl << endl;
-        //if(It%100 == 0)
+
+        if(It%convergeCheckSteps == 0 && It >= convergeCheckSteps)
+        {
+            TemperatureChange = gSum(mag(T-Told))/gSum(T) << nl << endl;
+            Info << "Temperature changes = " << TemperatureChange << nl << endl;
+            Told = T;
+        }
     }
 
     Info<< "End\n" << endl;

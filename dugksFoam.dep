@@ -621,7 +621,7 @@ dugksFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H
 dugksFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H
 dugksFoam.dep: $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H
 dugksFoam.dep: createFields.H
-dugksFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/readTimeControls.H
+dugksFoam.dep: readTimeControlsExplicit.H
 dugksFoam.dep: CourantNo.H
 dugksFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/setDeltaT.H
 $(OBJECTS_DIR)/dugksFoam.o: $(EXE_DEP)

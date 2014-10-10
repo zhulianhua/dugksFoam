@@ -53,3 +53,5 @@ volScalarField Told
     mesh,
     dimensionedScalar( "1", T.dimensions(), 1)
 );
+Info << "Setting  T_old Field for convergence check" << endl;
+Told = T;
