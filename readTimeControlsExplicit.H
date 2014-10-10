@@ -46,10 +46,10 @@ scalar maxDeltaT =
     runTime.controlDict().lookupOrDefault<scalar>("maxDeltaT", GREAT);
 
 scalar convergeTol =
-    runTime.controlDict().lookupOrDefault<scalar>("convergeTol", 1.0e-6);
+    runTime.controlDict().lookupOrDefault<scalar>("convergeTol", 1.0e-12);
 
 label convergeCheckSteps =
-    runTime.controlDict().lookupOrDefault("convergeCheckSteps", 100);
+    runTime.controlDict().lookupOrDefault("convergeCheckSteps", 1);
 
 scalar TemperatureChange = 1.0;
 // ************************************************************************* //
