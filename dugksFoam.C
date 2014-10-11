@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     Info<< "\nStarting time loop\n" << endl;
 
     label It = 0;
-    while (runTime.run() && TemperatureChange > convergeTol)
+    while (runTime.run() && (TemperatureChange > convergeTol))
     {
         #include "CourantNo.H" // calculate the Co num
         #include "readTimeControlsExplicit.H"
@@ -71,7 +71,9 @@ int main(int argc, char *argv[])
 
         if(It%convergeCheckSteps == 0 && It >= convergeCheckSteps)
         {
-            TemperatureChange = gSum(mag(T-Told))/gSum(T) << nl << endl;
+            tmp<Foam::GeometricField<scalar, Foam::fvPatchField, Foam::volMesh> > 
+                deltaTem = mag(T-Told);
+            TemperatureChange = gSum(deltaTem())/gSum(T);
             Info << "Temperature changes = " << TemperatureChange << nl << endl;
             Told = T;
         }
