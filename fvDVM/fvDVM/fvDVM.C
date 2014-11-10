@@ -638,7 +638,7 @@ Foam::fvDVM::fvDVM
             mesh_.time().timeName(),
             mesh_,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh_,
         dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
@@ -651,7 +651,7 @@ Foam::fvDVM::fvDVM
             mesh_.time().timeName(),
             mesh_,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh_,
         dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
