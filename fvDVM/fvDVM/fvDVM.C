@@ -378,6 +378,46 @@ void Foam::fvDVM::updateMacroSurf()
     qSurf_ = 2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT()*Pr_)*qSurf_;
     stressSurf_ = 
         2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT())*stressSurf_;
+
+    //- heat flux at wall is specially defined. as it ignores the velocity and temperature slip
+    GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
+        rhoBCs = rhoVol_.boundaryField();
+    qWall_ = dimensionedVector("0", qWall_.dimensions(), vector(0, 0, 0));
+    stressWall_ = dimensionedTensor
+        (
+            "0", 
+            stressWall_.dimensions(), 
+            pTraits<tensor>::zero
+        );
+    forAll(rhoBCs, patchi)
+    {
+        if (rhoBCs[patchi].type() == "calculatedMaxwell")
+        {
+            fvPatchField<vector>& qPatch = qWall_.boundaryField()[patchi];
+            fvPatchField<tensor>& stressPatch = stressWall_.boundaryField()[patchi];
+            //- tau at surface use the tau at slip temperature as it is.
+            fvsPatchField<scalar>&  tauPatch = tauSurf_.boundaryField()[patchi];
+            forAll(qPatch, facei)
+            {
+                forAll(DV_, dvi)
+                {
+                    scalar dXiCellSize = dXiCellSize_.value();
+                    discreteVelocity& dv = DV_[dvi];
+                    vector xi = dv.xi().value();
+                    qPatch[facei] += 0.5*dXiCellSize*dv.weight()*xi
+                        *(
+                             magSqr(xi)*dv.gSurf().boundaryField()[patchi][facei]
+                           + dv.hSurf().boundaryField()[patchi][facei]
+                         );
+                    stressPatch[facei] += 
+                        dXiCellSize*dv.weight()*dv.gSurf().boundaryField()[patchi][facei]*xi*xi;
+                    qPatch[facei] = 2.0*tauPatch[facei]/(2.0*tauPatch[facei] + 0.5*time_.deltaT().value()*Pr_)*qPatch[facei];
+                    stressPatch[facei] = 
+                        2.0*tauPatch[facei]/(2.0*tauPatch[facei] + 0.5*time_.deltaT().value())*stressPatch[facei];
+                }
+            }
+        }
+    }
 }
 
 
@@ -694,6 +734,32 @@ Foam::fvDVM::fvDVM
         ),
         mesh_,
         dimensionedScalar( "0", dimTime, 0)
+    ),
+    qWall_
+    (
+        IOobject
+        (
+            "qWall",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_,
+        dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
+    ),
+    stressWall_
+    (
+        IOobject
+        (
+            "stressWall",
+            mesh_.time().timeName(),
+            mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh_,
+        dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
     )
 {
     initialiseDV();

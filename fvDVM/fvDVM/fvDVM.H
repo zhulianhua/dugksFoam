@@ -176,6 +176,10 @@ class fvDVM
         //- tau for face
         surfaceScalarField tauSurf_;
 
+        //- Wall heat flux and stress, only defined at wall boundary faces
+        //- meanningless at other kind of faces
+        volVectorField qWall_; 
+        volTensorField stressWall_;
 
     // Private Member Functions
     //
