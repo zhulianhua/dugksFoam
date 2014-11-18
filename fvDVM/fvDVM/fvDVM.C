@@ -411,10 +411,10 @@ void Foam::fvDVM::updateMacroSurf()
                          );
                     stressPatch[facei] += 
                         dXiCellSize*dv.weight()*dv.gSurf().boundaryField()[patchi][facei]*xi*xi;
-                    qPatch[facei] = 2.0*tauPatch[facei]/(2.0*tauPatch[facei] + 0.5*time_.deltaT().value()*Pr_)*qPatch[facei];
-                    stressPatch[facei] = 
-                        2.0*tauPatch[facei]/(2.0*tauPatch[facei] + 0.5*time_.deltaT().value())*stressPatch[facei];
                 }
+                qPatch[facei] = 2.0*tauPatch[facei]/(2.0*tauPatch[facei] + 0.5*time_.deltaT().value()*Pr_)*qPatch[facei];
+                stressPatch[facei] = 
+                    2.0*tauPatch[facei]/(2.0*tauPatch[facei] + 0.5*time_.deltaT().value())*stressPatch[facei];
             }
         }
     }
@@ -452,10 +452,10 @@ void Foam::fvDVM::updateMacroVol()
             rhoVol_ += dXiCellSize_*dv.weight()*dv.gTildeVol();
             rhoUvol += dXiCellSize_*dv.weight()*dv.gTildeVol()*dv.xi();
             rhoEvol += 0.5*dXiCellSize_*dv.weight()
-               *(
-                    magSqr(dv.xi())*dv.gTildeVol() 
-                  + dv.hTildeVol()
-                );
+                *(
+                        magSqr(dv.xi())*dv.gTildeVol() 
+                        + dv.hTildeVol()
+                 );
         }
     }
     else // update by macro flux
@@ -474,17 +474,17 @@ void Foam::fvDVM::updateMacroVol()
             rhoVol_[own] -= (rhoSurf_[facei]*Usurf_[facei]&Sf[facei])*dt/V[own];
             rhoVol_[nei] += (rhoSurf_[facei]*Usurf_[facei]&Sf[facei])*dt/V[nei];
             rhoUvol[own] -= (rhoSurf_[facei]*Usurf_[facei]*Usurf_[facei]
-                            + stressSurf_[facei])&Sf[facei]*dt/V[own];
+                    + stressSurf_[facei])&Sf[facei]*dt/V[own];
             rhoUvol[nei] += (rhoSurf_[facei]*Usurf_[facei]*Usurf_[facei]
-                            + stressSurf_[facei])&Sf[facei]*dt/V[nei];
+                    + stressSurf_[facei])&Sf[facei]*dt/V[nei];
             scalar rhoEsurf = 
                 rhoSurf_[facei]
-               *(magSqr(Usurf_[facei]) + (KInner_ + 3)/2.0*R_.value()*Tsurf_[facei]);
+                *(magSqr(Usurf_[facei]) + (KInner_ + 3)/2.0*R_.value()*Tsurf_[facei]);
 
             rhoEvol[own] -= (rhoEsurf*Usurf_[facei] + qSurf_[facei])
-                            &Sf[facei]*dt/V[own];
+                &Sf[facei]*dt/V[own];
             rhoEvol[nei] += (rhoEsurf*Usurf_[facei] + qSurf_[facei])
-                            &Sf[facei]*dt/V[nei];
+                &Sf[facei]*dt/V[nei];
         }
         // boundary faces
         forAll(rhoSurf_.boundaryField(), patchi)
@@ -507,15 +507,15 @@ void Foam::fvDVM::updateMacroVol()
             {
                 const label own = pOwner[pFacei];
                 rhoVol_[own] -= (rhoSurfPatch[pFacei]*UsurfPatch[pFacei]
-                               &SfPatch[pFacei])*dt/V[own];
+                        &SfPatch[pFacei])*dt/V[own];
                 rhoUvol[own] -= (rhoSurfPatch[pFacei]*UsurfPatch[pFacei]*UsurfPatch[pFacei]
-                                + stressSurfPatch[pFacei])&Sf[pFacei]*dt/V[own];
+                        + stressSurfPatch[pFacei])&Sf[pFacei]*dt/V[own];
                 scalar rhoEsurf = 
                     rhoSurfPatch[pFacei]
                     *(magSqr(UsurfPatch[pFacei]) + (KInner_ + 3)/2.0*R_.value()*TsurfPatch[pFacei]);
 
                 rhoEvol[own] -= (rhoEsurf*UsurfPatch[pFacei] + qSurfPatch[pFacei])
-                               &SfPatch[pFacei]*dt/V[own];
+                    &SfPatch[pFacei]*dt/V[own];
             }
         }
     }
@@ -544,10 +544,10 @@ void Foam::fvDVM::updateMacroVol()
         discreteVelocity& dv = DV_[dvi];
         c = dv.xi() - Uvol_;
         qVol_ += 0.5*dXiCellSize_*dv.weight()*c
-          *(
-               magSqr(c)*dv.gTildeVol() 
-             + dv.hTildeVol()
-           );
+            *(
+                    magSqr(c)*dv.gTildeVol() 
+                    + dv.hTildeVol()
+             );
     }
     //- correction for bar to original
     qVol_ = 2.0*tauVol_/(2.0*tauVol_ + time_.deltaT()*Pr_)*qVol_;
@@ -556,28 +556,28 @@ void Foam::fvDVM::updateMacroVol()
 
 template<template<class> class PatchType, class GeoMesh> 
 Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
-Foam::fvDVM::updateTau
+    Foam::fvDVM::updateTau
 (
-    const GeometricField<scalar, PatchType, GeoMesh>& T, 
-    const GeometricField<scalar, PatchType, GeoMesh>& rho
-)
+ const GeometricField<scalar, PatchType, GeoMesh>& T, 
+ const GeometricField<scalar, PatchType, GeoMesh>& rho
+ )
 {
     tmp<GeometricField<scalar, PatchType, GeoMesh> > tTau
-    (
-        new GeometricField<scalar, PatchType, GeoMesh>
         (
-            IOobject
-            (
-                "tau",
-                mesh_.time().timeName(),
-                mesh_,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            mesh_,
-            dimensionedScalar( "0", dimTime, 0)
-        )
-    );
+         new GeometricField<scalar, PatchType, GeoMesh>
+         (
+          IOobject
+          (
+           "tau",
+           mesh_.time().timeName(),
+           mesh_,
+           IOobject::NO_READ,
+           IOobject::NO_WRITE
+          ),
+          mesh_,
+          dimensionedScalar( "0", dimTime, 0)
+         )
+        );
     GeometricField<scalar, PatchType, GeoMesh>& tau = tTau();
     tau = muRef_*exp(omega_*log(T/Tref_))/rho/T/R_;
     return tTau;
@@ -586,181 +586,181 @@ Foam::fvDVM::updateTau
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::fvDVM::fvDVM
+    Foam::fvDVM::fvDVM
 (
-    volScalarField& rho,
-    volVectorField& U,
-    volScalarField& T
-)
-:
-    IOdictionary
-    (
-        IOobject
+ volScalarField& rho,
+ volVectorField& U,
+ volScalarField& T
+ )
+    :
+        IOdictionary
         (
-            "DVMProperties",
-            T.time().constant(),
-            T.mesh(),
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
+         IOobject
+         (
+          "DVMProperties",
+          T.time().constant(),
+          T.mesh(),
+          IOobject::MUST_READ,
+          IOobject::NO_WRITE
+         )
+        ),
+        mesh_(rho.mesh()),
+        time_(rho.time()),
+        rhoVol_(rho),
+        Uvol_(U),
+        Tvol_(T),
+        fvDVMparas_(subOrEmptyDict("fvDVMparas")),
+        gasProperties_(subOrEmptyDict("gasProperties")),
+        nXiPerDim_(readLabel(fvDVMparas_.lookup("nDV"))),
+        xiMax_(fvDVMparas_.lookup("xiMax")),
+        xiMin_(fvDVMparas_.lookup("xiMin")),
+        dXi_((xiMax_-xiMin_)/(nXiPerDim_ - 1)),
+        dXiCellSize_
+        (
+         "dXiCellSize",
+         pow(dimLength/dimTime, 3),
+         scalar(1.0)
+        ),
+        macroFlux_(fvDVMparas_.lookupOrDefault("macroFlux", word("no"))),
+        //res_(fvDVMparas_.lookupOrDefault("res", 1.0e-12)),
+        //checkSteps_(fvDVMparas_.lookupOrDefault("checkSteps", 100)),
+        R_(gasProperties_.lookup("R")),
+        omega_(readScalar(gasProperties_.lookup("omega"))),
+        Tref_(gasProperties_.lookup("Tref")),
+        muRef_(gasProperties_.lookup("muRef")),
+        Pr_(readScalar(gasProperties_.lookup("Pr"))),
+        KInner_((gasProperties_.lookupOrDefault("KInner", 0))),
+        DV_(0),
+        rhoSurf_
+        (
+         IOobject
+         (
+          "rhoSurf",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::NO_WRITE
+         ),
+         mesh_,
+         dimensionedScalar( "0", rho.dimensions(), 0)
+        ),
+        Tsurf_
+        (
+         IOobject
+         (
+          "Tsurf",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::NO_WRITE
+         ),
+         mesh_,
+         dimensionedScalar( "0", T.dimensions(), 0)
+        ),
+        Usurf_
+        (
+         IOobject
+         (
+          "Usurf",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::NO_WRITE
+         ),
+         mesh_,
+         dimensionedVector( "0", U.dimensions(), vector(0,0,0))
+        ),
+        qSurf_
+        (
+         IOobject
+         (
+          "qSurf",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::AUTO_WRITE
+         ),
+         mesh_,
+         dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
+        ),
+        stressSurf_
+        (
+         IOobject
+         (
+          "stressSurf",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::AUTO_WRITE
+         ),
+         mesh_,
+         dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
+        ),
+        qVol_
+        (
+         IOobject
+         (
+          "q",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::AUTO_WRITE
+         ),
+         mesh_,
+         dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
+        ),
+        tauVol_
+        (
+         IOobject
+         (
+          "tauVol",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::NO_WRITE
+         ),
+         mesh_,
+         dimensionedScalar( "0", dimTime, 0)
+        ),
+        tauSurf_
+        (
+         IOobject
+         (
+          "tauSurf",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::NO_WRITE
+         ),
+         mesh_,
+         dimensionedScalar( "0", dimTime, 0)
+        ),
+        qWall_
+        (
+         IOobject
+         (
+          "qWall",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::AUTO_WRITE
+         ),
+         mesh_,
+         dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
+        ),
+        stressWall_
+        (
+         IOobject
+         (
+          "stressWall",
+          mesh_.time().timeName(),
+          mesh_,
+          IOobject::NO_READ,
+          IOobject::AUTO_WRITE
+         ),
+         mesh_,
+         dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
         )
-    ),
-    mesh_(rho.mesh()),
-    time_(rho.time()),
-    rhoVol_(rho),
-    Uvol_(U),
-    Tvol_(T),
-    fvDVMparas_(subOrEmptyDict("fvDVMparas")),
-    gasProperties_(subOrEmptyDict("gasProperties")),
-    nXiPerDim_(readLabel(fvDVMparas_.lookup("nDV"))),
-    xiMax_(fvDVMparas_.lookup("xiMax")),
-    xiMin_(fvDVMparas_.lookup("xiMin")),
-    dXi_((xiMax_-xiMin_)/(nXiPerDim_ - 1)),
-    dXiCellSize_
-    (
-        "dXiCellSize",
-        pow(dimLength/dimTime, 3),
-        scalar(1.0)
-    ),
-    macroFlux_(fvDVMparas_.lookupOrDefault("macroFlux", word("no"))),
-    //res_(fvDVMparas_.lookupOrDefault("res", 1.0e-12)),
-    //checkSteps_(fvDVMparas_.lookupOrDefault("checkSteps", 100)),
-    R_(gasProperties_.lookup("R")),
-    omega_(readScalar(gasProperties_.lookup("omega"))),
-    Tref_(gasProperties_.lookup("Tref")),
-    muRef_(gasProperties_.lookup("muRef")),
-    Pr_(readScalar(gasProperties_.lookup("Pr"))),
-    KInner_((gasProperties_.lookupOrDefault("KInner", 0))),
-    DV_(0),
-    rhoSurf_
-    (
-        IOobject
-        (
-            "rhoSurf",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedScalar( "0", rho.dimensions(), 0)
-    ),
-    Tsurf_
-    (
-        IOobject
-        (
-            "Tsurf",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedScalar( "0", T.dimensions(), 0)
-    ),
-    Usurf_
-    (
-        IOobject
-        (
-            "Usurf",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedVector( "0", U.dimensions(), vector(0,0,0))
-    ),
-    qSurf_
-    (
-        IOobject
-        (
-            "qSurf",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh_,
-        dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
-    ),
-    stressSurf_
-    (
-        IOobject
-        (
-            "stressSurf",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh_,
-        dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
-    ),
-    qVol_
-    (
-        IOobject
-        (
-            "q",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh_,
-        dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
-    ),
-    tauVol_
-    (
-        IOobject
-        (
-            "tauVol",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedScalar( "0", dimTime, 0)
-    ),
-    tauSurf_
-    (
-        IOobject
-        (
-            "tauSurf",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh_,
-        dimensionedScalar( "0", dimTime, 0)
-    ),
-    qWall_
-    (
-        IOobject
-        (
-            "qWall",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh_,
-        dimensionedVector( "0", dimMass/pow(dimTime,3), vector(0,0,0))
-    ),
-    stressWall_
-    (
-        IOobject
-        (
-            "stressWall",
-            mesh_.time().timeName(),
-            mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh_,
-        dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
-    )
 {
     initialiseDV();
     setCalculatedMaxwellRhoBC();
@@ -794,7 +794,7 @@ void Foam::fvDVM::getCoNum(scalar& maxCoNum, scalar& meanCoNum)
     scalar dt = time_.deltaTValue();
     scalarField UbyDx =
         mesh_.surfaceInterpolation::deltaCoeffs()
-       *(mag(Usurf_) + sqrt(scalar(mesh_.nSolutionD()))*xiMax_);
+        *(mag(Usurf_) + sqrt(scalar(mesh_.nSolutionD()))*xiMax_);
     maxCoNum = gMax(UbyDx)*dt;
     meanCoNum = gSum(UbyDx)/UbyDx.size()*dt;
 }
