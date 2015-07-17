@@ -861,8 +861,9 @@ Foam::discreteVelocity::equilibriumMaxwell
         )
     );
     GeometricField<scalar, PatchType, GeoMesh>& equ = tEqu();
-    equ = rho/pow(sqrt(2.0*pi*R*T),D)*exp(-magSqr(U - xi_)/(2.0*R*T))
-        /pow(vUnit, 3-D);
+    //equ = rho/pow(sqrt(2.0*pi*R*T),D)*exp(-magSqr(U - xi_)/(2.0*R*T))
+        ///pow(vUnit, 3-D);
+    equ = rho/((2.0*pi*R*T))*exp(-magSqr(U - xi_)/(2.0*R*T))/vUnit;
     return tEqu;
 }
 
