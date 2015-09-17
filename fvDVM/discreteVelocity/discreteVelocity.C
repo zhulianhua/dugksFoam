@@ -441,6 +441,7 @@ void Foam::discreteVelocity::updateGHbarSurf()
             && gBarPvol_.boundaryField()[patchi].type() != "processor"
             && gBarPvol_.boundaryField()[patchi].type() != "symmetryPlane"
             && gBarPvol_.boundaryField()[patchi].type() != "cyclic"
+            && gBarPvol_.boundaryField()[patchi].type() != "processorCyclic"
            ) // only for fixed gradient g/hBarPvol
         {
             // normal component of the grad field
