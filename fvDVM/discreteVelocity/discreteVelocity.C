@@ -553,10 +553,10 @@ void Foam::discreteVelocity::updateGHbarSurf()
                 {
                     gSurfPatch[facei] = iGbarPvol[faceCells[facei]] 
                       + ((iGbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
                     hSurfPatch[facei] = iHbarPvol[faceCells[facei]] 
                       + ((iHbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
                 //incoming and parallel to face, not changed.
                 }
             }
@@ -574,17 +574,20 @@ void Foam::discreteVelocity::updateGHbarSurf()
                 {
                     gSurfPatch[facei] = iGbarPvol[faceCells[facei]] 
                       + ((iGbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
                     hSurfPatch[facei] = iHbarPvol[faceCells[facei]] 
                       + ((iHbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
 
                     rhoPatch.outGoing()[facei] += //add outgoing normal momentum flux to outGoing container
                         weight_*(xii&faceSf)*gSurfPatch[facei];
                 }
             }
         }
-        else if (type == "processor") // parallel
+        else if (type == "processor"
+              || type == "cyclic"
+              || type == "processorCyclic"
+              ) // parallel
         {
             forAll(gSurfPatch, facei)
             {
@@ -593,20 +596,20 @@ void Foam::discreteVelocity::updateGHbarSurf()
                 {
                     gSurfPatch[facei] = iGbarPvol[faceCells[facei]] 
                       + ((iGbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
                     hSurfPatch[facei] = iHbarPvol[faceCells[facei]] 
                       + ((iHbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
 
                 } 
                 else //incomming from processor boundaryField
                 {
                     gSurfPatch[facei] = gBarPvol_.boundaryField()[patchi][facei]
                       + ((gBarPgrad_.boundaryField()[patchi][facei])
-                       &(CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - xii*dt));
+                       &(CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt));
                     hSurfPatch[facei] = hBarPvol_.boundaryField()[patchi][facei]
                       + ((hBarPgrad_.boundaryField()[patchi][facei])
-                       &(CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - xii*dt));
+                       &(CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt));
                 }
 
             }
@@ -620,10 +623,10 @@ void Foam::discreteVelocity::updateGHbarSurf()
                 {
                     gSurfPatch[facei] = iGbarPvol[faceCells[facei]] 
                       + ((iGbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
                     hSurfPatch[facei] = iHbarPvol[faceCells[facei]] 
                       + ((iHbarPgrad[faceCells[facei]])
-                       &(CfPatch[facei] - C[faceCells[facei]] - xii*dt));
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
                 } 
             }
         }
