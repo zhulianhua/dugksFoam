@@ -318,6 +318,11 @@ void Foam::fvDVM::updateGHbarSurfMaxwellWallIn()
         DV_[DVid].updateGHbarSurfMaxwellWallIn();
 }
 
+void Foam::fvDVM::updateGHbarSurfSymmetryIn()
+{
+    forAll(DV_, DVid)
+        DV_[DVid].updateGHbarSurfSymmetryIn();
+}
 
 void Foam::fvDVM::updateMacroSurf()
 {
@@ -782,6 +787,7 @@ void Foam::fvDVM::evolution()
     updateGHbarSurf();
     updateMaxwellWallRho();
     updateGHbarSurfMaxwellWallIn();
+    updateGHbarSurfSymmetryIn();
     updateMacroSurf();
     updateGHsurf();
     updateGHtildeVol();

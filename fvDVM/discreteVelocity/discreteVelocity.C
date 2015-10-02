@@ -307,6 +307,10 @@ void Foam::discreteVelocity::setBCtype()
                 )
             );
         }
+
+        //Debug
+        if(myDVid_ == 1)
+            Info << "Patch " << patchi << " type: " << gSurf_.boundaryField()[patchi].type() << endl;
     }
 }
 
