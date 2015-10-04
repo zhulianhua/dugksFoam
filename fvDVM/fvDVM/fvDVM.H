@@ -215,6 +215,9 @@ class fvDVM
         //- 2.3 Update the incoming maxwell wall DF, perDV
         void updateGHbarSurfMaxwellWallIn();
 
+        //- 2.4 Update the incoming maxwell wall DF, perDV
+        void updateGHbarSurfSymmetryIn();
+
         //- 3. update Macros at cell faces, global DV
         void updateMacroSurf();
 
