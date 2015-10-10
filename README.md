@@ -4,7 +4,7 @@ An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinet
 # Key features
 * Solving discrete velocity Boltzmann equation
 * Based on Shakhov-BGK collision model
-* An standard OpenFOAM solver
+* A standard OpenFOAM solver
 * Arbitrary unstructured meshes
 * MPI parallel computing capability
 * 1D & 2D & 3D in a single solver
