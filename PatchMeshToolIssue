@@ -1,0 +1,32 @@
+diff --git a/Make/options b/Make/options
+index 662f52d..61b432d 100644
+--- a/Make/options
++++ b/Make/options
+@@ -1,11 +1,9 @@
+ EXE_INC = \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/OpenFOAM/lnInclude \
+-    -I$(LIB_SRC)/meshTools/lnInclude \
+     -IfvDVM/lnInclude
+ 
+ EXE_LIBS = \
+     -L$(FOAM_USER_LIBBIN) \
+     -lfiniteVolume \
+-    -ldugksFoam \
+-    -lmeshTools
++    -ldugksFoam
+diff --git a/fvDVM/Make/options b/fvDVM/Make/options
+index d88a3bd..007993b 100644
+--- a/fvDVM/Make/options
++++ b/fvDVM/Make/options
+@@ -1,8 +1,6 @@
+ EXE_INC = \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+-    -I$(LIB_SRC)/OpenFoam/lnInclude \
+-    -I$(LIB_SRC)/meshTools/lnInclude 
++    -I$(LIB_SRC)/OpenFoam/lnInclude
+ 
+ LIB_LIBS = \
+-    -lfiniteVolume \
+-    -lmeshTools
++    -lfiniteVolume
