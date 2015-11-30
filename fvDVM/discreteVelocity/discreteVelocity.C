@@ -685,7 +685,7 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
         {
             fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
             fvsPatchScalarField& hSurfPatch = hSurf_.boundaryField()[patchi];
-            vector faceSf = mesh_.Sf().boundaryField()[patchi][0];
+            const vector faceSf = mesh_.Sf().boundaryField()[patchi][0];
             vector nomlizedDirec = faceSf/mag(faceSf);
             label targetDVid = nomlizedDirec
                 & vector(symXtargetDVid_, symYtargetDVid_, symZtargetDVid_);
