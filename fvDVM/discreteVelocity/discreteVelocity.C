@@ -679,6 +679,7 @@ void Foam::discreteVelocity::updateGHbarSurfMaxwellWallIn()
 
 void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
 {
+    vector xii = xi_.value();
     forAll(gSurf_.boundaryField(), patchi)
     {
         if (gSurf_.boundaryField()[patchi].type() == "symmetryPlane")
@@ -686,15 +687,18 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
             fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
             fvsPatchScalarField& hSurfPatch = hSurf_.boundaryField()[patchi];
             const vector faceSf = mesh_.Sf().boundaryField()[patchi][0];
-            vector nomlizedDirec = faceSf/mag(faceSf);
-            label targetDVid = nomlizedDirec
-                & vector(symXtargetDVid_, symYtargetDVid_, symZtargetDVid_);
-            forAll(gSurfPatch, facei)
+            if ((xii & faceSf) <= 0) // incomming
             {
-                gSurfPatch[facei] = dvm_.DVi(targetDVid).gSurf().boundaryField()
-                    [patchi][facei];
-                hSurfPatch[facei] = dvm_.DVi(targetDVid).hSurf().boundaryField()
-                    [patchi][facei];
+                vector nomlizedDirec = faceSf/mag(faceSf);
+                label targetDVid = round(nomlizedDirec
+                    & vector(symXtargetDVid_, symYtargetDVid_, symZtargetDVid_));
+                forAll(gSurfPatch, facei)
+                {
+                    gSurfPatch[facei] = dvm_.DVi(targetDVid).gSurf().boundaryField()
+                        [patchi][facei];
+                    hSurfPatch[facei] = dvm_.DVi(targetDVid).hSurf().boundaryField()
+                        [patchi][facei];
+                }
             }
         }
     }
