@@ -690,8 +690,8 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
             if ((xii & faceSf) <= 0) // incomming
             {
                 vector nomlizedDirec = faceSf/mag(faceSf);
-                label targetDVid = round(nomlizedDirec
-                    & vector(symXtargetDVid_, symYtargetDVid_, symZtargetDVid_));
+                label targetDVid = round( fabs(nomlizedDirec
+                    & vector(symXtargetDVid_, symYtargetDVid_, symZtargetDVid_)));
                 forAll(gSurfPatch, facei)
                 {
                     gSurfPatch[facei] = dvm_.DVi(targetDVid).gSurf().boundaryField()
