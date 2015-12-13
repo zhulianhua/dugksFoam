@@ -4,7 +4,7 @@ An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinet
 ## Key features
 * Solving discrete velocity Boltzmann equation;
 * Based on Shakhov-BGK collision model;
-* Using discrete unified gas kinetic scheme (Asymptotic preserving propertyc);
+* Using discrete unified gas kinetic scheme (Asymptotic preserving property);
 * A standard OpenFOAM solver;
 * Arbitrary unstructured meshes;
 * MPI parallel computing capability;
@@ -12,8 +12,8 @@ An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinet
 * Post processing tools of OpenFOAM are ready to use;
 * Various boundary condition types.
 
-## Toturials
-To be added.
+## Documentation and demo cases
+See `dugksFoam.pdf` in `doc`.
 
 ## References
 * [1] Z.L. Guo, K. Xu, R.J. Wang, Discrete unified gas kinetic scheme for all Knudsen number flows: low-speed isothermal case, Phys. Rev. E, 88 (2013) 033305.
