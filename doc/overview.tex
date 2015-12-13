@@ -1,0 +1,52 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Contents: Who contributed to this Document
+% $Id: overview.tex 456 2011-04-06 09:10:27Z oetiker $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Because this introduction is the reader's first impression, I have
+% edited very heavily to try to clarify and economize the language.
+% I hope you do not mind! I always try to ask "is this word needed?"
+% in my own writing but I don't want to impose my style on you...
+% but here I think it may be more important than the rest of the book.
+% --baron
+
+\chapter{Preface}
+
+The dugksFoam is an OpenFOAM solver for the Boltzmann equation with the Shakhov collision model.
+The numerical method behind it is the discrete unified gas kinetic scheme (DUGKS, see Ref.~\cite{guozl15}).
+The DUGKS discretizes the governing equation in both physical space and velocity space.
+It solves the partial differential equations of the discrete velocity distribution functions in a finite volume framework.
+In DUGKS, the fluxes of distribution functions are constructed from the local characteristic solution of the governing equation itself.
+This feature makes DUGKS very efficient for simulating near continuum flows.
+
+The OpenFOAM is one of the most popular open-source general CFD toolkits.
+The biggest feature of it is that it allows users to develop their own solvers in a very high level.
+The OpenFOAM provides the solver developers varies ready-to-use major components of numerical solving of PDE (mainly for finite-volume discretization),
+such as the arbitrary unstructured mesh representation, spatial discretization operator, time integration schemes,
+boundary condition types and message passing interface (MPI) based parallelization.
+In the development of a typical OpenFOAM solver,
+the developer spends most of the time to define the solving procedure,
+i.e., writing the Field Operation And Manipulation expressions.
+Besides these basic components, OpenFOAM also provides a branch of general utilities for pre-processing,
+post-processing, parallel computing, job control etc.
+
+By implementing the DUGKS into an OpenFOAM solver, we can take many advantages of the OpenFOAM toolkit.
+Such as the easy pre and post processing, parallelization, solving control and parameter configurations.
+We expect it can be a convenient tool for study non-equilibrium gas flow and heat transfer problem in complex geometries.
+In addition, it can serve as a reference for developing other kinetic type equations such as the phonon transport equation, semiconductor equation etc.,
+because solving kinetic type equation in OpenFOAM is not so that common compared with those macro-filed based solvers the OpenFOAM provides.
+The only kinetic type equation solver appears in official OpenFOAM distribution is the discrete ordinates model (DOM) for thermal radiation computation.
+
+In this documentation, we present the installation, usages, demo cases of the dugksFoam.
+For the detailed information about the DUGKS, one can refer to the papers by Guo et al\cite{guozl13,guozl15}.
+For the detailed of implementation of the DUGKS in unstructured mesh and the configuration of demo cases in this documentation,
+one can refer the paper post on arxiv.org by the author\cite{zhulh15}.
+
+\endinput
+%
+
+% Local Variables:
+% TeX-master: "lshort2e"
+% mode: latex
+% mode: flyspell
+% End:

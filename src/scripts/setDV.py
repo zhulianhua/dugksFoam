@@ -68,7 +68,7 @@ def save_file(Xis, weights):
         f_Xi.write(str(len(Xis)))
         f_Xi.write("\n(\n")
         for i in Xis:
-            f_Xi.write("% 19.16e\n" % i)
+            f_Xi.write("% 18.15e\n" % i)
         f_Xi.write(");")
 
     with open('constant/weights','w') as f_weight:
@@ -76,7 +76,7 @@ def save_file(Xis, weights):
         f_weight.write(str(len(weights)))
         f_weight.write("\n(\n")
         for i in weights:
-            f_weight.write("% 19.16e\n" % i)
+            f_weight.write("% 18.15e\n" % i)
         f_weight.write(");")
     print("Writting Done!\n")
 
@@ -100,13 +100,15 @@ def dvGH(C,N2):
 
     w = V[0,:]*V[0,:]*np.sqrt(np.pi)/2.0
 
-    v = np.sort(v)
-    w = np.flipud(np.sort(w))
+    vw = np.transpose(np.vstack((v,w)))
+    vw = vw[vw[:,0].argsort()]
+    v = vw[:,0]
+    w = vw[:,1]
 
     Xis = np.hstack((-np.flipud(v),v))
     weights = np.hstack((np.flipud(w),w))
-    Xis = Xis*C
     weights = weights*np.exp(Xis**2)*C
+    Xis = Xis*C
     return (Xis, weights)
     
 def dvNC(xiMax,N):

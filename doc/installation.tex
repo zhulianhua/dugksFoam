@@ -1,0 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Contents: Things you need to know
+% $Id: things.tex 536 2015-06-26 06:41:33Z oetiker $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Installation}
+
+\label{inst}
+Before the installation of dugksFoam, you should have installed the OpenFOAM together with the ThirdParty tools on your Linux machine.
+The download address of OpenFOAM and the detailed installation instructions can found in the
+\href{http://openfoam.org/download/}{official web site of OpenFOAM} and the ~\href{https://openfoamwiki.net/index.php/Main_Page}{OpenFOAM wiki}.
+The OpenFOAM versions I have tested is 2.2.1, 2.3.0 and 2.4.0.
+But the dugksFoam should also works on the latest release of OpenFOAM (Ver.~3.0.0 or above).
+
+The detailed installation instructions are as follows.
+\begin{enumerate}
+\item Load the OpenFOAM environment:
+Type the command \texttt{ofxxx} where \texttt{xxx} is the three digits of the OpenFOAM version you installed,
+if you have followed the official installation instructions of OpenFOAM. For example, \texttt{of240} or \texttt{of230}.
+\item Create your own solvers installation location, and cd to it :
+\begin{verbatim}
+mkdir -p $FOAM_RUN/../applications
+cd $FOAM_RUN/../applications
+\end{verbatim}
+\item Get the source code using git (see below) from \href{https://github.com/zhulianhua/dugksFoam}{dugksFoam repository}
+or download it as a ZIP package by clicking \href{https://github.com/zhulianhua/dugksFoam/archive/master.zip}{here}.
+\begin{itemize}
+\item If using git:
+\begin{verbatim}
+git clone git@github.com:zhulianhua/dugksFoam.git
+cd dugksFoam/src
+\end{verbatim}
+\item If installing by ZIP package, move the ZIP package (\texttt{dugksFoam-master.zip}) to \verb|$FOAM_RUN/../applications|. Then unzip it by
+\begin{verbatim}
+unzip dugksFoam-master.zip
+mv dugksFoam-master dugksFoam
+cd dugksFoam/src
+\end{verbatim}
+\end{itemize}
+
+\item For OpenFOAM release older than 2.4.0, there is a compatible issue in the make file options about \verb|meshTool|.
+If you are using OpenFOAM older than 2.4.0, fix it by this command:
+\begin{verbatim}
+git apply PatchMeshToolIssue
+\end{verbatim}
+
+\item Compile the dugksFoam by:
+\begin{verbatim}
+./Allwmake
+\end{verbatim}
+
+\item Check if the compilation is OK:
+\begin{verbatim}
+which dugksFoam
+\end{verbatim}
+It should tell you where the compiled executable \verb|dugksFoam| is.
+\end{enumerate}
+%
+
+% Local Variables:
+% TeX-master: "dugksFoam"
+% mode: latex
+% mode: flyspell
+% End:
