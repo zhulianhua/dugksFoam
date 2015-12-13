@@ -17,7 +17,7 @@ The initial temperautre filed is uniform 273K, and the wall temperature is also 
 In this case, the Knudsen number Kn is 0.075 based on the initial density filed and the cavity width $L$.
 So the mean free path is 0.075m.
 The initial density field input in the \verb|0/rho| file should be calculated from the mean free path provided the argon gas properties.
-Refer to ~\cite{zhulhA} for the related formulations.
+Refer to ~\cite{zhulh15} for the related formulations.
 We also provide a simple Python script named \verb|para.py| in the case's directory to compute the related parameters.
 You can run it by \verb|python para.py|.
 
@@ -31,12 +31,12 @@ where 28 is the number of discrete velocity in each direction, and 337.196399395
 Refer to Sec.~\ref{sec_dv} for more details about settings of discrete velocities.
 
 Fig.~\ref{ldc_UT} show some of the results of this case.
-You can also compare the results with those in \cite{lhzhuA} in detail.
+You can also compare the results with those in \cite{zhulh15} in detail.
 
 \begin{figure}
   \centering
   % Requires \usepackage{graphicx}
-  \includegraphics[width=0.4\textwidth]{img/ldc.eps}\\
+  \includegraphics[width=0.4\textwidth]{img/ldc.eps}
   \caption{Lid-driven cavity flow}\label{ldc}
 \end{figure}
 

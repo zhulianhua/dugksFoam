@@ -10,16 +10,19 @@
 \let\lsspageref\pageref
 \ProvidesPackage{lshort}
 \RequirePackage{etex}
+%\RequirePackage{graphics}
+\RequirePackage{graphicx}
+\RequirePackage{epstopdf}
 \RequirePackage[autolanguage]{numprint}
-\RequirePackage[english,francais,german,greek]{babel}
+%\RequirePackage[english,francais,german,greek]{babel}
 \RequirePackage{mflogo}
-\RequirePackage{hologo} % for \XeTeX logo *ak*
+%\RequirePackage{hologo} % for \XeTeX logo *ak*
 \RequirePackage{verbatim}
 \RequirePackage{fancyhea}
 \RequirePackage{calc}
 \RequirePackage{lastpage}
 \RequirePackage{amsmath,latexsym,amsthm}
-\RequirePackage[retainorgcmds]{IEEEtrantools}
+%\RequirePackage[retainorgcmds]{IEEEtrantools}
 \RequirePackage[psamsfonts]{amssymb}
 \RequirePackage{cmmib57}% Use blueSky cmmib5 cmmib7 cmsy
 \RequirePackage[all]{xy}
@@ -65,45 +68,45 @@
 \rhead[\fancyplain{}{\bfseries\leftmark}]
     {\fancyplain{}{\bfseries\thepage}}
 \cfoot[]{}
-\RequirePackage{pgfbaseplot}
-\RequirePackage{tikz}
-\usetikzlibrary{%
-  arrows,%
-  calc,%
-  fit,%
-  patterns,%
-  plotmarks,%
-  shapes.geometric,%
-  shapes.misc,%
-  shapes.symbols,%
-  shapes.arrows,%
-  shapes.callouts,%
-  shapes.multipart,%
-  shapes.gates.logic.US,%
-  shapes.gates.logic.IEC,%
-  er,%
-  automata,%
-  backgrounds,%
-  chains,%
-  topaths,%
-  trees,%
-  petri,%
-  mindmap,%
-  matrix,%
-  calendar,%
-  folding,%
-  fadings,%
-  through,%
-  positioning,%
-  scopes,%
-  decorations.fractals,%
-  decorations.shapes,%
-  decorations.text,%
-  decorations.pathmorphing,%
-  decorations.pathreplacing,%
-  decorations.footprints,%
-  decorations.markings,%
-  shadows}
+%\RequirePackage{pgfbaseplot}
+%\RequirePackage{tikz}
+%\usetikzlibrary{%
+  %arrows,%
+  %calc,%
+  %fit,%
+  %patterns,%
+  %plotmarks,%
+  %shapes.geometric,%
+  %shapes.misc,%
+  %shapes.symbols,%
+  %shapes.arrows,%
+  %shapes.callouts,%
+  %shapes.multipart,%
+  %shapes.gates.logic.US,%
+  %shapes.gates.logic.IEC,%
+  %er,%
+  %automata,%
+  %backgrounds,%
+  %chains,%
+  %topaths,%
+  %trees,%
+  %petri,%
+  %mindmap,%
+  %matrix,%
+  %calendar,%
+  %folding,%
+  %fadings,%
+  %through,%
+  %positioning,%
+  %scopes,%
+  %decorations.fractals,%
+  %decorations.shapes,%
+  %decorations.text,%
+  %decorations.pathmorphing,%
+  %decorations.pathreplacing,%
+  %decorations.footprints,%
+  %decorations.markings,%
+  %shadows}
 \addtolength{\headheight}{1.6pt}
 %
 %
@@ -217,19 +220,6 @@
 \begin{lrbox}{\symbbox}
 \hspace*{4ex}\begin{tabular}{@{}#1@{}}}%
 {\end{tabular}\end{lrbox}\makebox[\linewidth]{\usebox{\symbbox}}\par\medskip}
-%
-% Special Prep for AMS Symbols Printout
-% Should work if AMS is not available
-%
-
-%% we have no PS versions of the rsfs fonts ... so this is a nogo for pdf
-%\ifx\HyPsd@pageref\undefined
-\RequirePackage{mathrsfs}
-%\fi
-\RequirePackage{latexsym}
-\RequirePackage[mathcal]{euscript}
-%
-% Print |--| to show a distance
 %
 \newcommand{\demowidth}[1]{\rule{0.3pt}{1.3ex}\rule{#1}{0.3pt}\rule{0.3pt}{1.3ex}}
 %

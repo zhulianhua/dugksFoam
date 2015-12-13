@@ -12,9 +12,9 @@ all: dugksFoam.pdf
 
 dugksFoam.pdf: $(FILES)
 	-mkdir pdfbuild
-	(T1FONTS=.:`pwd`/eurofont: && export T1FONTS && TEXINPUTS=.:`pwd`/src:`pwd`/euro:`pwd`/oberdiek:${TEXINPUTS:-:}&&export TEXINPUTS&& cd pdfbuild&& \
+	(T1FONTS=.:`pwd`/eurofont: && export T1FONTS && TEXINPUTS=.:`pwd`:`pwd`/euro:`pwd`/oberdiek:${TEXINPUTS:-:}&&export TEXINPUTS&& cd pdfbuild&& \
 	$(PDFLATEX) dugksFoam&& $(PDFLATEX) dugksFoam&& \
-	$(MAKEINDEX) -s dugksFoam.ist dugksFoam&&$(PDFLATEX) dugksFoam&& \
+	#$(MAKEINDEX) -s dugksFoam.ist dugksFoam&&$(PDFLATEX) dugksFoam&& \
 	(thumbpdf --resolution 10 dugksFoam.pdf && $(PDFLATEX) dugksFoam)&& \
 	mv dugksFoam.pdf .. )
 	rm pdfbuild/*
