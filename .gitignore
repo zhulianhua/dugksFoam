@@ -1,4 +1,6 @@
 *.o
 *.so
 **/linux**
+*.dep
+**/lnInclude**
 Make/
