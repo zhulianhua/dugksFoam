@@ -3,6 +3,5 @@
 **/linux**
 *.dep
 src/Make/linux**
-src/lnInclude/
 src/fvDVM/lnInclude/
 src/fvDVM/Make/linux**
