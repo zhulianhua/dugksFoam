@@ -98,54 +98,54 @@ Below are examples of \verb|constant/Xis| and \verb|constant/weights| files corr
 \begin{itemize}
 \item \verb|constant/Xis|:
 \begin{verbatim}
-    FoamFile
-    {
-        version     2.0;
-        format      ascii;
-        class       scalarList;
-        location    "constant";
-        object      Xis;
-    }
-    // ********************************************* //
-    28
-    (
-    -1.7664856627356885e+03
-    -1.5149431219611315e+03
-    -1.3067831284809952e+03
-     //...
-     //... skip of 22 lines
-     //...
-     1.3067831284809952e+03
-     1.5149431219611315e+03
-     1.7664856627356885e+03
-    );
-    // ********************************************* //
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       scalarList;
+    location    "constant";
+    object      Xis;
+}
+// ********************************************* //
+28
+(
+-1.7664856627356885e+03
+-1.5149431219611315e+03
+-1.3067831284809952e+03
+ //...
+ //... skip of 22 lines
+ //...
+ 1.3067831284809952e+03
+ 1.5149431219611315e+03
+ 1.7664856627356885e+03
+);
+// ********************************************* //
 \end{verbatim}
 
 \item \verb|constant/weights|:
 \begin{verbatim}
-    FoamFile
-    {
-        version     2.0;
-        format      ascii;
-        class       scalarList;
-        location    "constant";
-        object      weights;
-    }
-    // ********************************************* //
-    28
-    (
-     2.9037294321023950e+02
-     2.2430119141828482e+02
-     1.9483915929202675e+02
-     //...
-     //... skip of 22 lines
-     //...
-     1.9483915929202675e+02
-     2.2430119141828482e+02
-     2.9037294321023950e+02
-    );
-    // ********************************************* //
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       scalarList;
+    location    "constant";
+    object      weights;
+}
+// ********************************************* //
+28
+(
+ 2.9037294321023950e+02
+ 2.2430119141828482e+02
+ 1.9483915929202675e+02
+ //...
+ //... skip of 22 lines
+ //...
+ 1.9483915929202675e+02
+ 2.2430119141828482e+02
+ 2.9037294321023950e+02
+);
+// ********************************************* //
 \end{verbatim}
 \end{itemize}
 For Newton-Cotes quadrature and half-range Gauss-Hermite quadrature,
