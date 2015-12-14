@@ -2,5 +2,6 @@
 *.so
 **/linux**
 *.dep
-Make/
+src/Make/
 src/fvDVM/lnInclude/
+src/fvDVM/Make/
