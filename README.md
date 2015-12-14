@@ -12,10 +12,10 @@ An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinet
 * Post processing tools of OpenFOAM are ready to use;
 * Various boundary condition types.
 
-## Documentation and demo cases
-See `dugksFoam.pdf` in `doc`.
+## Installation and documentation
+See `dugksFoam.pdf` in `doc` directory, or download it [here](https://github.com/zhulianhua/dugksFoam/raw/master/doc/dugksFoam.pdf).
 
 ## References
-* [1] Z.L. Guo, K. Xu, R.J. Wang, Discrete unified gas kinetic scheme for all Knudsen number flows: low-speed isothermal case, Phys. Rev. E, 88 (2013) 033305.
-* [2] Z.L. Guo, R.J. Wang, K. Xu, Discrete unified gas kinetic scheme for all Knudsen number flows. II. Thermal compressible case, Phys. Rev. E, 91(2015) 033313.
+* [1] Z.L. Guo, K. Xu, R.J. Wang, Discrete unified gas kinetic scheme for all Knudsen number flows: low-speed isothermal case, [Phys. Rev. E, 88 (2013) 033305](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.88.033305).
+* [2] Z.L. Guo, R.J. Wang, K. Xu, Discrete unified gas kinetic scheme for all Knudsen number flows. II. Thermal compressible case, [Phys. Rev. E, 91(2015) 033313.](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.91.033313)
 * [3] L.H. Zhu, Z.L. Guo, K. Xu, Discrete unified gas kinetic scheme on unstructured meshes, arXiv preprint arXiv:1503.07374, (2015).
