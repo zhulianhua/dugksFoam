@@ -1,1 +1,0 @@
-../BCs/maxwellWallFvsPatchField/maxwellWallFvsPatchFields.C

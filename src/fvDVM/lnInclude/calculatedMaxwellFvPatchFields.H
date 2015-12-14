@@ -1,1 +1,0 @@
-../BCs/calculatedMaxwellFvPatchField/calculatedMaxwellFvPatchFields.H
