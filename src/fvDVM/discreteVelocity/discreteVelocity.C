@@ -684,6 +684,7 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
     {
         if (gSurf_.boundaryField()[patchi].type() == "symmetryPlane")
         {
+            if(myDVid_ == 0 &&  Pstream::myProcNo() == 2) Info << gSurf_.boundaryField()[patchi].type();
             fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
             fvsPatchScalarField& hSurfPatch = hSurf_.boundaryField()[patchi];
             const vector faceSf = mesh_.Sf().boundaryField()[patchi][0];
