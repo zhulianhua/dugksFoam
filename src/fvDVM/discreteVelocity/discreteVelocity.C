@@ -307,10 +307,6 @@ void Foam::discreteVelocity::setBCtype()
                 )
             );
         }
-
-        //Debug
-        if(myDVid_ == 1)
-            Info << "Patch " << patchi << " type: " << gSurf_.boundaryField()[patchi].type() << endl;
     }
 }
 
@@ -682,9 +678,9 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
     vector xii = xi_.value();
     forAll(gSurf_.boundaryField(), patchi)
     {
-        if (gSurf_.boundaryField()[patchi].type() == "symmetryPlane")
+        if (gSurf_.boundaryField()[patchi].type() == "symmetryPlane" 
+        &&  gSurf_.boundaryField()[patchi].size() > 0 )
         {
-            if(myDVid_ == 0 &&  Pstream::myProcNo() == 2) Info << gSurf_.boundaryField()[patchi].type();
             fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
             fvsPatchScalarField& hSurfPatch = hSurf_.boundaryField()[patchi];
             const vector faceSf = mesh_.Sf().boundaryField()[patchi][0];
