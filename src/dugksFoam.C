@@ -73,9 +73,21 @@ int main(int argc, char *argv[])
         {
             tmp<Foam::GeometricField<scalar, Foam::fvPatchField, Foam::volMesh> > 
                 deltaTem = mag(T-Told);
+            tmp<Foam::GeometricField<scalar, Foam::fvPatchField, Foam::volMesh> > 
+                deltaRho = mag(rho-rhoOld);
+            tmp<Foam::GeometricField<scalar, Foam::fvPatchField, Foam::volMesh> > 
+                deltaU = mag(U-Uold);
+
             TemperatureChange = gSum(deltaTem())/gSum(T);
-            Info << "Temperature changes = " << TemperatureChange << nl << endl;
+            rhoChange         = gSum(deltaRho())/gSum(T);
+            Uchange           = gSum(deltaU())/gSum(mag(U)());
+
+            Info << "Temperature changes = " << TemperatureChange << endl;
+            Info << "Density     changes = " << rhoChange         << endl;
+            Info << "Velocity    changes = " << Uchange << nl     << endl;
             Told = T;
+            rhoOld = rho;
+            Uold = U;
         }
     }
 

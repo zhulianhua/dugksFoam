@@ -53,5 +53,34 @@ volScalarField Told
     mesh,
     dimensionedScalar( "1", T.dimensions(), 1)
 );
-Info << "Setting  T_old Field for convergence check" << endl;
+volScalarField rhoOld
+(
+    IOobject
+    (
+        "rhoOld",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh,
+    dimensionedScalar( "1", rho.dimensions(), 1)
+);
+volVectorField Uold
+(
+    IOobject
+    (
+        "Uold",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh,
+    dimensionedVector( "1", U.dimensions(), vector(1, 1, 1))
+);
+
+Told = T;
+rhoOld = rho;
+Uold = U;
 Told = T;
