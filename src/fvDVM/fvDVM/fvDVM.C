@@ -399,6 +399,7 @@ void Foam::fvDVM::updateMacroSurf()
         if (rhoBCs[patchi].type() == "calculatedMaxwell")
         {
             fvPatchField<vector>& qPatch = qWall_.boundaryField()[patchi];
+            fvPatchField<vector>& Upatch = Uvol_.boundaryField()[patchi];
             fvPatchField<tensor>& stressPatch = stressWall_.boundaryField()[patchi];
             //- tau at surface use the tau at slip temperature as it is.
             fvsPatchField<scalar>&  tauPatch = tauSurf_.boundaryField()[patchi];
@@ -409,9 +410,10 @@ void Foam::fvDVM::updateMacroSurf()
                     scalar dXiCellSize = dXiCellSize_.value();
                     discreteVelocity& dv = DV_[dvi];
                     vector xi = dv.xi().value();
-                    qPatch[facei] += 0.5*dXiCellSize*dv.weight()*xi
+                    vector c = dv.xi() - Upatch[facei];
+                    qPatch[facei] += 0.5*dXiCellSize*dv.weight()*c  //sometimes wall moves, then c != \xi
                         *(
-                             magSqr(xi)*dv.gSurf().boundaryField()[patchi][facei]
+                             magSqr(c)*dv.gSurf().boundaryField()[patchi][facei]
                            + dv.hSurf().boundaryField()[patchi][facei]
                          );
                     stressPatch[facei] += 
