@@ -410,7 +410,7 @@ void Foam::fvDVM::updateMacroSurf()
                     scalar dXiCellSize = dXiCellSize_.value();
                     discreteVelocity& dv = DV_[dvi];
                     vector xi = dv.xi().value();
-                    vector c = dv.xi() - Upatch[facei];
+                    vector c = xi - Upatch[facei];
                     qPatch[facei] += 0.5*dXiCellSize*dv.weight()*c  //sometimes wall moves, then c != \xi
                         *(
                              magSqr(c)*dv.gSurf().boundaryField()[patchi][facei]
