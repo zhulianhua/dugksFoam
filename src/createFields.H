@@ -1,4 +1,3 @@
-Info<< "Reading field rho\n" << endl;
 volScalarField rho
 (
     IOobject
@@ -12,7 +11,6 @@ volScalarField rho
     mesh
 );
 
-Info<< "Reading field T\n" << endl;
 volScalarField T
 (
     IOobject
@@ -26,7 +24,6 @@ volScalarField T
     mesh
 );
 
-Info<< "Reading field U\n" << endl;
 volVectorField U
 (
     IOobject

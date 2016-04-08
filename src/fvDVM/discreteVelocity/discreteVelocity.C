@@ -486,7 +486,7 @@ void Foam::discreteVelocity::updateGHbarSurf()
     {
         label own = owner[facei];
         label nei = neighbour[facei];
-        if ((xii&Sf[facei]) >=  0) // comming from own
+        if ((xii&Sf[facei]) >=  VSMALL) // comming from own
         {
 
             iGsurf[facei] = iGbarPvol[own] 
@@ -497,32 +497,30 @@ void Foam::discreteVelocity::updateGHbarSurf()
 
         }
         // Debug, no = 0, =0 put to > 0
-        else// if ((xii&Sf[facei]) < 0) // comming form nei
+        else if ((xii&Sf[facei]) < -VSMALL) // comming form nei
         {
             iGsurf[facei] = iGbarPvol[nei]
               + (iGbarPgrad[nei]&(Cf[facei] - C[nei] - 0.5*xii*dt));
             iHsurf[facei] = iHbarPvol[nei]
               + (iHbarPgrad[nei]&(Cf[facei] - C[nei] - 0.5*xii*dt));
         }
-        /*
-         *else // NOTE: may be improved by using weighted combination
-         *{
-         *    iGsurf[facei] = 0.5*
-         *    (
-         *        iGbarPvol[nei] + ((iGbarPgrad[nei])
-         *       &(Cf[facei] - C[nei] - xii*dt))
-         *      + iGbarPvol[own] + ((iGbarPgrad[own])
-         *       &(Cf[facei] - C[nei] - xii*dt))
-         *    );
-         *    iHsurf[facei] = 0.5*
-         *    (
-         *        iHbarPvol[own] + ((iHbarPgrad[own])
-         *       &(Cf[facei] - C[nei] - xii*dt))
-         *      + iHbarPvol[nei] + ((iHbarPgrad[nei])
-         *       &(Cf[facei] - C[nei] - xii*dt))
-         *    );
-         *}
-         */
+        else 
+        {
+            iGsurf[facei] = 0.5*
+            (
+                iGbarPvol[nei] + ((iGbarPgrad[nei])
+               &(Cf[facei] - C[nei] - 0.5*xii*dt))
+              + iGbarPvol[own] + ((iGbarPgrad[own])
+               &(Cf[facei] - C[own] - 0.5*xii*dt))
+            );
+            iHsurf[facei] = 0.5*
+            (
+               iHbarPvol[nei] + ((iHbarPgrad[nei])
+               &(Cf[facei] - C[nei] - 0.5*xii*dt))
+             + iHbarPvol[own] + ((iHbarPgrad[own])
+               &(Cf[facei] - C[own] - 0.5*xii*dt))
+            );
+        }
     }
 
   // boundary faces
@@ -592,7 +590,7 @@ void Foam::discreteVelocity::updateGHbarSurf()
             forAll(gSurfPatch, facei)
             {
                 vector faceSf= SfPatch[facei];
-                if ((xii&faceSf) >  0 ) // outgoing
+                if ((xii&faceSf) >  VSMALL ) // outgoing
                 {
                     gSurfPatch[facei] = iGbarPvol[faceCells[facei]] 
                       + ((iGbarPgrad[faceCells[facei]])
@@ -600,9 +598,8 @@ void Foam::discreteVelocity::updateGHbarSurf()
                     hSurfPatch[facei] = iHbarPvol[faceCells[facei]] 
                       + ((iHbarPgrad[faceCells[facei]])
                        &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
-
                 } 
-                else //incomming from processor boundaryField
+                else if ((xii&faceSf) <  -VSMALL )//incomming from processor boundaryField
                 {
                     gSurfPatch[facei] = gBarPvol_.boundaryField()[patchi][facei]
                       + ((gBarPgrad_.boundaryField()[patchi][facei])
@@ -610,6 +607,22 @@ void Foam::discreteVelocity::updateGHbarSurf()
                     hSurfPatch[facei] = hBarPvol_.boundaryField()[patchi][facei]
                       + ((hBarPgrad_.boundaryField()[patchi][facei])
                        &(CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt));
+                }
+                else 
+                {
+                    gSurfPatch[facei] = 0.5*(
+                            iGbarPvol[faceCells[facei]] + 
+                            (   (iGbarPgrad[faceCells[facei]]) & (CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt) )
+                            + gBarPvol_.boundaryField()[patchi][facei] + 
+                            (   (gBarPgrad_.boundaryField()[patchi][facei]) & (CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt) )
+                    );
+                    hSurfPatch[facei] = 0.5*(
+                            iHbarPvol[faceCells[facei]] + 
+                            (   (iHbarPgrad[faceCells[facei]]) & (CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt) )
+                            + hBarPvol_.boundaryField()[patchi][facei] + 
+                            (   (hBarPgrad_.boundaryField()[patchi][facei]) & (CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt) )
+                    );
+
                 }
 
             }
@@ -767,7 +780,7 @@ void Foam::discreteVelocity::updateGHsurf()
     // NOTE: here the boundar face value are not computed
 
     vector xii = xi_.value();
-    // We do it mannuly for the outgoing DF?? Why??
+    // We do it mannuly for the outgoing DF!
     forAll(gSurf_.boundaryField(), patchi)
     {
         fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
@@ -780,9 +793,19 @@ void Foam::discreteVelocity::updateGHsurf()
         fvsPatchScalarField& relaxFactorPatch = 
             relaxFactor.boundaryField()[patchi];
 
+        //NOTE:  If keep the below block, for the Sod problem, -parallel running would be different from serial run.
+        //       I also doubt that for cyclic boundary, the same problem will happen.
+        //       But if I totally deleted it, my experience shows for hypersonic cylinder flow, the free stream BC will have problem.
+        //       So, I keep it, but exclude the cases of processor/cyclic/processorCyclic.
+        //       The reason I guess is that, for those 'coupled' type boundary condition, the boundary field will be calculated when 
+        //       doing GeometricField calculation, such as the relaxiation computation. While for those boundary condition I've defined, 
+        //       such as mixed or maxwell, I have to explicitly calculate the unchanged boundary values.
         forAll(gSurfPatch, facei)
         {
-            if ( (xii&(SfPatch[facei])) > 0  ) // Here, if delted , the free stream BC may bo s problem
+            if ( (xii&(SfPatch[facei])) > 0 &&   // Here, if delted , the free stream BC may bo s problem
+            && gBarPvol_.boundaryField()[patchi].type() != "processor"
+            && gBarPvol_.boundaryField()[patchi].type() != "processorCyclic"
+            && gBarPvol_.boundaryField()[patchi].type() != "cyclic")
             {
                 gSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
                     *gSurfPatch[facei]

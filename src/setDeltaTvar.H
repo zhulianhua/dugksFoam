@@ -22,19 +22,31 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Global
-    compressibleCourantNo
+    setDeltaT
 
 Description
-    Calculates the mean and maximum wave speed based Courant Numbers.
+    Reset the timestep to maintain a constant maximum courant Number.
+    Reduction of time-step is immediate, but increase is damped to avoid
+    unstable oscillations.
 
 \*---------------------------------------------------------------------------*/
 
-scalar CoNum = 0.0;
-scalar meanCoNum = 0.0;
+if (adjustTimeStep)
+{
+    scalar maxDeltaTFact = maxCo/(CoNum + SMALL);
+    scalar deltaTFact = min(min(maxDeltaTFact, 1.0 + 0.1*maxDeltaTFact), 1.2);
 
-dvm.getCoNum(CoNum, meanCoNum);
+    runTime.setDeltaT
+    (
+        min
+        (
+            deltaTFact*runTime.deltaTValue(),
+            maxDeltaT
+        )
+    );
 
-//Info<< "Mean and max Courant Numbers = "
-    //<< meanCoNum << " " << CoNum << endl;
+    if(dvm.mpiReducer().rank() == 0)
+        Info<< "deltaT = " <<  runTime.deltaTValue() << endl;
+}
 
 // ************************************************************************* //

@@ -9,5 +9,6 @@ zeroBoundaryGrad/zeroBoundaryGrads.C
 Venkatakrishnan/VenkatakrishnanSlopeMulti/VenkatakrishnanSlopeMulti.C
 Venkatakrishnan/VenkatakrishnanLimitedGrad/VenkatakrishnanLimitedGrads.C
 fvDVM/fvDVM.C
+fieldMPIreducer/fieldMPIreducer.C
 
 LIB = $(FOAM_USER_LIBBIN)/libdugksFoam

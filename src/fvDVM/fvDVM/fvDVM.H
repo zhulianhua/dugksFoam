@@ -57,9 +57,11 @@ SourceFiles
 #ifndef fvDVM_H
 #define fvDVM_H
 
+#include <mpi.h>
 #include "discreteVelocity.H"
 #include "dimensionedScalar.H"
 #include "calculatedMaxwellFvPatchField.H"
+#include "fieldMPIreducer.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -68,6 +70,7 @@ namespace Foam
 
 // Forward declaration of classes
 class discreteVelocity;
+//class fieldMPIreducer;
 /*---------------------------------------------------------------------------*\
                            Class fvDVM Declaration
 \*---------------------------------------------------------------------------*/
@@ -92,6 +95,9 @@ class fvDVM
 
         //- Reference to the temperature field
         volScalarField& Tvol_;
+
+        //- argList from setRootCases.H
+        Foam::argList& args_;
 
         //- DVM model parameters dictionary
         const dictionary fvDVMparas_;
@@ -149,6 +155,8 @@ class fvDVM
         //- Gas molecular innter degree of freedom
         const label KInner_;
 
+        fieldMPIreducer mpiReducer_;
+
         //- List of pointers to discrete velocities
         PtrList<discreteVelocity> DV_;
 
@@ -181,6 +189,7 @@ class fvDVM
         volVectorField qWall_; 
         volTensorField stressWall_;
 
+
     // Private Member Functions
     //
         //- set discrete velocity
@@ -197,6 +206,8 @@ class fvDVM
         //  Create the discrete velocity(DV) set and Initialize 
         //  each of the DV the with their discrete velocity value and weight
         void initialiseDV();
+
+        //void initMPI(int*, char**);
 
         //- set the outGoingByRho Field of calculatedMaxwellWall type rho Field
         //  do it only at the beginnig
@@ -250,7 +261,10 @@ class fvDVM
         (
             volScalarField& rho, 
             volVectorField& U,
-            volScalarField& T
+            volScalarField& T,
+            int* argc,
+            char*** argv,
+            Foam::argList& args
         );
 
         //- Destructor
@@ -268,6 +282,8 @@ class fvDVM
 
         //- Co num, max and mean
         void getCoNum(scalar& maxCoNum, scalar& meanCoNum);
+
+        const fieldMPIreducer& mpiReducer() const;
 
         //- discreteVelocity object for discreteVelocity I
         inline const discreteVelocity& DVi(const label I) const;

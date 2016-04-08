@@ -23,11 +23,13 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include <mpi.h>
 #include "fvDVM.H"
 #include "constants.H"
 #include "fvm.H"
 #include "calculatedMaxwellFvPatchField.H"
 #include "scalarIOList.H"
+#include "fieldMPIreducer.H"
 
 using namespace Foam::constant;
 using namespace Foam::constant::mathematical;
@@ -51,7 +53,6 @@ void Foam::fvDVM::setDVgrid
 )
 {
     // Read from file ./constant/Xis and ./constant/weights
-    Info << "Reading xi list" << endl;
     scalarIOList xiList
     (
         IOobject
@@ -64,7 +65,6 @@ void Foam::fvDVM::setDVgrid
         )
     );
 
-    Info << "Reading weight list" << endl;
     scalarIOList weightList
     (
         IOobject
@@ -121,11 +121,17 @@ void Foam::fvDVM::initialiseDV()
          nXiPerDim_
     );
 
+    scalarField weightsGlobal;
+    vectorField XisGlobal;
+
     if (mesh_.nSolutionD() == 3)    //3D(X & Y & Z)
     {
         nXiX_ = nXiY_ = nXiZ_ = nXiPerDim_;
         nXi_ = nXiX_*nXiY_*nXiZ_;
-        DV_.setSize(nXi_);
+
+        weightsGlobal.setSize(nXi_);
+        XisGlobal.setSize(nXi_);
+
         label i = 0;
         for (label iz = 0; iz < nXiZ_; iz++)
         {
@@ -134,32 +140,36 @@ void Foam::fvDVM::initialiseDV()
                 for (label ix = 0; ix < nXiZ_; ix++)
                 {
                     scalar weight = weights1D[iz]*weights1D[iy]*weights1D[ix];
-                    dimensionedVector xi
-                    (
-                        "xi", 
-                        dimLength/dimTime, 
-                        vector(Xis[ix], Xis[iy], Xis[iz])
-                    );
+                    //dimensionedVector xi
+                    //(
+                        //"xi", 
+                        //dimLength/dimTime, 
+                        //vector(Xis[ix], Xis[iy], Xis[iz])
+                    //);
+                    vector xi(Xis[ix], Xis[iy], Xis[iz]);
+                    weightsGlobal[i] = weight;
+                    XisGlobal[i] = xi;
 
-                    label symXtargetDVid = iz*nXiY_*nXiX_ + iy*nXiX_ + (nXiX_ - ix -1);
-                    label symYtargetDVid = iz*nXiY_*nXiX_ + (nXiY_ - iy - 1)*nXiX_ + ix;
-                    label symZtargetDVid = (nXiZ_ - iz -1)*nXiY_*nXiX_ + iy*nXiX_ + ix;
-                    DV_.set
-                    (
-                        i,
-                        new discreteVelocity
-                        (
-                            *this,
-                            mesh_,
-                            time_,
-                            weight,
-                            xi,
-                            i,
-                            symXtargetDVid,
-                            symYtargetDVid,
-                            symZtargetDVid
-                        )
-                    );
+                    //label symXtargetDVid = iz*nXiY_*nXiX_ + iy*nXiX_ + (nXiX_ - ix -1);
+                    //label symYtargetDVid = iz*nXiY_*nXiX_ + (nXiY_ - iy - 1)*nXiX_ + ix;
+                    //label symZtargetDVid = (nXiZ_ - iz -1)*nXiY_*nXiX_ + iy*nXiX_ + ix;
+
+                    //DV_.set
+                    //(
+                        //i,
+                        //new discreteVelocity
+                        //(
+                            //*this,
+                            //mesh_,
+                            //time_,
+                            //weight,
+                            //xi,
+                            //i,
+                            //symXtargetDVid,
+                            //symYtargetDVid,
+                            //symZtargetDVid
+                        //)
+                    //);
                     i++;
                 }
             }
@@ -172,38 +182,44 @@ void Foam::fvDVM::initialiseDV()
             nXiX_ = nXiY_ = nXiPerDim_;
             nXiZ_ = 1;
             nXi_ = nXiX_*nXiY_*nXiZ_;
-            DV_.setSize(nXi_);
+            //DV_.setSize(nXi_);
+            weightsGlobal.setSize(nXi_);
+            XisGlobal.setSize(nXi_);
             label i = 0;
             for (label iy = 0; iy < nXiY_; iy++)
             {
                 for (label ix = 0; ix < nXiX_; ix++)
                 {
                     scalar weight = weights1D[iy]*weights1D[ix]*1;
-                    dimensionedVector xi
-                    (
-                        "xi",
-                        dimLength/dimTime, 
-                        vector(Xis[ix], Xis[iy], 0.0)
-                    );
-                    label symXtargetDVid = iy*nXiX_ + (nXiX_ - ix -1);
-                    label symYtargetDVid = (nXiY_ - iy - 1)*nXiX_ + ix;
-                    label symZtargetDVid = 0;
-                    DV_.set
-                    (
-                        i,
-                        new discreteVelocity
-                        (
-                            *this,
-                            mesh_,
-                            time_,
-                            weight,
-                            xi,
-                            i,
-                            symXtargetDVid,
-                            symYtargetDVid,
-                            symZtargetDVid
-                        )
-                    );
+                    //dimensionedVector xi
+                    //(
+                        //"xi",
+                        //dimLength/dimTime, 
+                        //vector(Xis[ix], Xis[iy], 0.0)
+                    //);
+                    vector xi(Xis[ix], Xis[iy], 0.0);
+                    weightsGlobal[i] = weight;
+                    XisGlobal[i] = xi;
+
+                    //label symXtargetDVid = iy*nXiX_ + (nXiX_ - ix -1);
+                    //label symYtargetDVid = (nXiY_ - iy - 1)*nXiX_ + ix;
+                    //label symZtargetDVid = 0;
+                    //DV_.set
+                    //(
+                        //i,
+                        //new discreteVelocity
+                        //(
+                            //*this,
+                            //mesh_,
+                            //time_,
+                            //weight,
+                            //xi,
+                            //i,
+                            //symXtargetDVid,
+                            //symYtargetDVid,
+                            //symZtargetDVid
+                        //)
+                    //);
                     i++;
                 }
             }
@@ -213,43 +229,82 @@ void Foam::fvDVM::initialiseDV()
             nXiX_ = nXiPerDim_;
             nXiY_ = nXiZ_ = 1;
             nXi_ = nXiX_*nXiY_*nXiZ_;
-            DV_.setSize(nXi_);
+            //DV_.setSize(nXi_);
+            weightsGlobal.setSize(nXi_);
+            XisGlobal.setSize(nXi_);
             label i = 0;
             for (label ix = 0; ix < nXiX_; ix++)
             {
                 scalar weight = weights1D[ix]*1*1;
-                dimensionedVector xi
-                (
-                    "xi",
-                    dimLength/dimTime,
-                    vector(Xis[ix], 0.0, 0.0)
-                );
-                label symXtargetDVid = (nXiX_ - ix -1);
-                label symYtargetDVid = 0;
-                label symZtargetDVid = 0;
-                DV_.set
-                (
-                    i,
-                    new discreteVelocity
-                    (
-                        *this,
-                        mesh_,
-                        time_,
-                        weight,
-                        xi,
-                        i,
-                        symXtargetDVid,
-                        symYtargetDVid,
-                        symZtargetDVid
-                    )
-                );
+                //dimensionedVector xi
+                //(
+                    //"xi",
+                    //dimLength/dimTime,
+                    //vector(Xis[ix], 0.0, 0.0)
+                //);
+                vector xi(Xis[ix], 0.0, 0.0);
+                //label symXtargetDVid = (nXiX_ - ix -1);
+                //label symYtargetDVid = 0;
+                //label symZtargetDVid = 0;
+                //DV_.set
+                //(
+                    //i,
+                    //new discreteVelocity
+                    //(
+                        //*this,
+                        //mesh_,
+                        //time_,
+                        //weight,
+                        //xi,
+                        //i,
+                        //symXtargetDVid,
+                        //symYtargetDVid,
+                        //symZtargetDVid
+                    //)
+                //);
+                weightsGlobal[i] = weight;
+                XisGlobal[i] = xi;
                 i++;
             }
         }
     }
 
-    Info<< "fvDVM : Allocated " << DV_.size()
+    Info<< "fvDVM : Allocated " << XisGlobal.size()
         << " discrete velocities" << endl;
+    label nA = nXi_ / mpiReducer_.nproc();
+    label nB = nXi_ - nA*mpiReducer_.nproc();
+    label nXiPart = nA + (label)(mpiReducer_.rank() < nB);
+    DV_.setSize(nXiPart);
+    if(mpiReducer_.rank() == 0)
+    {
+        Info << "nproc    " << mpiReducer_.nproc()  << endl;
+        Info << "nXisPart " << nXiPart << endl;
+    }
+    label chunk = 0;
+    label gid = 0;
+    Info << "nproc" << mpiReducer_.nproc() << endl;
+    forAll(DV_, i)
+    {
+        gid = chunk + mpiReducer_.rank();
+        DV_.set
+        (
+            i,
+            new discreteVelocity
+            (
+                *this,
+                mesh_,
+                time_,
+                weightsGlobal[gid],
+                dimensionedVector( "xi", dimLength/dimTime, XisGlobal[gid]),
+                i,
+                0,
+                0,
+                0
+            )
+        );
+        chunk += mpiReducer_.nproc();
+    }
+
 }
 
 
@@ -267,6 +322,7 @@ void Foam::fvDVM::setCalculatedMaxwellRhoBC()
                 refCast<calculatedMaxwellFvPatchField<scalar> >(rhoBCs[patchi]);
             const vectorField& Upatch = Uvol_.boundaryField()[patchi];
             const scalarField& Tpatch = Tvol_.boundaryField()[patchi];
+
             forAll(rhoPatch, facei)
             {
                 vector faceSf = SfPatch[facei];
@@ -287,7 +343,11 @@ void Foam::fvDVM::setCalculatedMaxwellRhoBC()
                     }
                 }
             }
+
+            if(args_.optionFound("dvParallel"))
+                mpiReducer_.reduceField(rhoPatch.inComingByRho());
         }
+
     }
 }
 
@@ -308,9 +368,20 @@ void Foam::fvDVM::updateGHbarSurf()
 
 void Foam::fvDVM::updateMaxwellWallRho()
 {
-    rhoVol_.correctBoundaryConditions(); //Bug here !!!
+    GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
+        rhoBCs = rhoVol_.boundaryField();
+    forAll(rhoBCs, patchi)
+    {
+        if (rhoBCs[patchi].type() == "calculatedMaxwell")
+        {
+            calculatedMaxwellFvPatchField<scalar>& rhoPatch = 
+                refCast<calculatedMaxwellFvPatchField<scalar> >(rhoBCs[patchi]);
+            if(args_.optionFound("dvParallel"))
+                mpiReducer_.reduceField(rhoPatch.outGoing());
+        }
+    }
+    rhoVol_.correctBoundaryConditions();
 }
-
 
 void Foam::fvDVM::updateGHbarSurfMaxwellWallIn()
 {
@@ -337,6 +408,17 @@ void Foam::fvDVM::updateMacroSurf()
             stressSurf_.dimensions(), 
             pTraits<tensor>::zero
         );
+    //if(Pstream::parRun())
+    //{
+        //Pout << "My proc NO " << Pstream::myProcNo() << endl;
+        //if(Pstream::myProcNo() == 1)
+            //Pout << "g[78] at proc 1  interface" <<  DV_[100].gSurf().boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary1to0")][0] << endl;
+        //if(Pstream::myProcNo() == 0)
+            //Pout << "g[78] at proc 0  interface" <<  DV_[100].gSurf().boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary0to1")][0] << endl;
+    //}else
+    //{
+        //Info << "g[78] at 50 th  interface" <<  DV_[100].gSurf()[49] << endl;
+    //}
 
     // Conserved variable, now zero as the prime variable 
     // has been set to zero
@@ -346,18 +428,25 @@ void Foam::fvDVM::updateMacroSurf()
     forAll(DV_, dvi)
     {
         discreteVelocity& dv = DV_[dvi];
-        rhoSurf_ += dXiCellSize_*dv.weight()*dv.gSurf();
-        rhoUsurf += dXiCellSize_*dv.weight()*dv.gSurf()*dv.xi();
-        rhoEsurf += 0.5*dXiCellSize_*dv.weight()
+        rhoSurf_  += dXiCellSize_*dv.weight()*dv.gSurf();
+        rhoUsurf  += dXiCellSize_*dv.weight()*dv.gSurf()*dv.xi();
+        rhoEsurf  += 0.5*dXiCellSize_*dv.weight()
            *(
                 dv.gSurf()*magSqr(dv.xi()) 
               + dv.hSurf()
             );
     }
 
-    //- get Prim. from Consv.
+    if(args_.optionFound("dvParallel"))
+    {
+        mpiReducer_.reduceField(rhoSurf_);
+        mpiReducer_.reduceField(rhoUsurf);
+        mpiReducer_.reduceField(rhoEsurf);
+    }
 
+    //- get Prim. from Consv.
     Usurf_ = rhoUsurf/rhoSurf_;
+
     Tsurf_ = (rhoEsurf - 0.5*rhoSurf_*magSqr(Usurf_))/((KInner_ + 3)/2.0*R_*rhoSurf_);
 
     tauSurf_ = updateTau(Tsurf_, rhoSurf_);
@@ -365,7 +454,7 @@ void Foam::fvDVM::updateMacroSurf()
 
     surfaceVectorField c = Usurf_;
 
-    //-get heat flux
+    //-get part heat flux 
     forAll(DV_, dvi)
     {
         discreteVelocity& dv = DV_[dvi];
@@ -375,16 +464,52 @@ void Foam::fvDVM::updateMacroSurf()
                  magSqr(c)*dv.gSurf() 
                + dv.hSurf()
              );
-        stressSurf_ += 
-            dXiCellSize_*dv.weight()*dv.gSurf()*c*c;
+        //- stressSurf is useless as we never update cell macro by macro flux 
+        //- Comment out it as it is expansive
+        //stressSurf_ += 
+            //dXiCellSize_*dv.weight()*dv.gSurf()*c*c;
     }
+    //- Get global heat flux, via MPI_Allreuce
+    if(args_.optionFound("dvParallel"))
+        mpiReducer_.reduceField(qSurf_);
 
     //- correction for bar to original
     qSurf_ = 2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT()*Pr_)*qSurf_;
-    stressSurf_ = 
-        2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT())*stressSurf_;
+
+
+
+    //if(Pstream::parRun())
+    //{
+        //Pout << "My proc NO " << Pstream::myProcNo() << endl;
+        //if(Pstream::myProcNo() == 1)
+        //{
+            //Pout << "rho at proc 1  interface" <<  rhoSurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary1to0")][0] << endl;
+            //Pout << "U   at proc 1  interface" <<    Usurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary1to0")][0] << endl;
+            //Pout << "T   at proc 1  interface" <<    Tsurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary1to0")][0] << endl;
+            //Pout << "q   at proc 1  interface" <<    qSurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary1to0")][0] << endl;
+        //}
+        //if(Pstream::myProcNo() == 0)
+        //{
+            //Pout << "rho at proc 0  interface" <<  rhoSurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary0to1")][0] << endl;
+            //Pout << "U   at proc 0  interface" <<    Usurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary0to1")][0] << endl;
+            //Pout << "T   at proc 0  interface" <<    Tsurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary0to1")][0] << endl;
+            //Pout << "q   at proc 0  interface" <<    qSurf_.boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary0to1")][0] << endl;
+        //}
+    //}else
+    //{
+            //Info << "rho at middle  interface" <<  rhoSurf_[49] << endl;
+            //Info << "  U at middle  interface" <<  Usurf_[49] << endl;
+            //Info << "  T at middle  interface" <<  Tsurf_[49] << endl;
+            //Info << "  q at middle  interface" <<  qSurf_[49] << endl;
+    //}
+
+
+    //- stress at surf is not used, as we dont't update macro in cell by macro flux at surface
+    //stressSurf_ = 
+        //2.0*tauSurf_/(2.0*tauSurf_ + 0.5*time_.deltaT())*stressSurf_;
 
     //- heat flux at wall is specially defined. as it ignores the velocity and temperature slip
+    //- NOTE: To be changed as it is part macro, but it will not affect the innner fields, so we change it later
     GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = rhoVol_.boundaryField();
     qWall_ = dimensionedVector("0", qWall_.dimensions(), vector(0, 0, 0));
@@ -427,11 +552,22 @@ void Foam::fvDVM::updateMacroSurf()
     }
 }
 
-
 void Foam::fvDVM::updateGHsurf()
 {
     forAll(DV_, DVid)
         DV_[DVid].updateGHsurf();
+
+    //if(Pstream::parRun())
+    //{
+        //Pout << "My proc NO " << Pstream::myProcNo() << endl;
+        //if(Pstream::myProcNo() == 1)
+            //Pout << "g[78] at proc 1  interface" <<  DV_[101].gSurf().boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary1to0")][0] << endl;
+        //if(Pstream::myProcNo() == 0)
+            //Pout << "g[78] at proc 0  interface" <<  DV_[101].gSurf().boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary0to1")][0] << endl;
+    //}else
+    //{
+        //Info << "g[78] at 50 th  interface" <<  DV_[101].gSurf()[49] << endl;
+    //}
 }
 
 
@@ -443,16 +579,19 @@ void Foam::fvDVM::updateGHtildeVol()
 
 void Foam::fvDVM::updateMacroVol()
 {
+    //- Old macros, used only if we update using macro fluxes.
     volVectorField rhoUvol = rhoVol_*Uvol_;
     volScalarField rhoEvol = rhoVol_*(magSqr(Uvol_) + (KInner_ + 3)/2.0*R_*Tvol_);
     qVol_ = dimensionedVector("0", qVol_.dimensions(), vector(0, 0, 0));
 
     if(macroFlux_ == "no") // update cell macro by moment from DF
     {
-        rhoVol_ =  dimensionedScalar("0", rhoVol_.dimensions(), 0);
+        //- init to zeros
+        rhoVol_ = dimensionedScalar("0", rhoVol_.dimensions(), 0);
         rhoUvol = dimensionedVector("0", rhoUvol.dimensions(), vector(0, 0, 0));
         rhoEvol = dimensionedScalar("0", rhoEvol.dimensions(), 0);
 
+        //- get part macro
         forAll(DV_, dvi)
         {
             discreteVelocity& dv = DV_[dvi];
@@ -463,6 +602,13 @@ void Foam::fvDVM::updateMacroVol()
                         magSqr(dv.xi())*dv.gTildeVol() 
                         + dv.hTildeVol()
                  );
+        }
+        //- get global macro via MPI_Allreduce
+        if(args_.optionFound("dvParallel"))
+        {
+            mpiReducer_.reduceField(rhoVol_);
+            mpiReducer_.reduceField(rhoUvol);
+            mpiReducer_.reduceField(rhoEvol);
         }
     }
     else // update by macro flux
@@ -545,7 +691,7 @@ void Foam::fvDVM::updateMacroVol()
     //- peculiar vel.
     volVectorField c = Uvol_;
 
-    //-get heat flux
+    //-get part heat flux
     forAll(DV_, dvi)
     {
         discreteVelocity& dv = DV_[dvi];
@@ -556,10 +702,13 @@ void Foam::fvDVM::updateMacroVol()
                     + dv.hTildeVol()
              );
     }
+
+    //- get global heat flux via MPI_Allreduce
+    if(args_.optionFound("dvParallel"))
+        mpiReducer_.reduceField(qVol_);
     //- correction for bar to original
     qVol_ = 2.0*tauVol_/(2.0*tauVol_ + time_.deltaT()*Pr_)*qVol_;
 }
-
 
 template<template<class> class PatchType, class GeoMesh> 
 Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
@@ -597,7 +746,10 @@ Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
 (
  volScalarField& rho,
  volVectorField& U,
- volScalarField& T
+ volScalarField& T,
+ int* argc,
+ char*** argv,
+ Foam::argList& args
  )
     :
         IOdictionary
@@ -616,6 +768,7 @@ Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
         rhoVol_(rho),
         Uvol_(U),
         Tvol_(T),
+        args_(args),
         fvDVMparas_(subOrEmptyDict("fvDVMparas")),
         gasProperties_(subOrEmptyDict("gasProperties")),
         nXiPerDim_(readLabel(fvDVMparas_.lookup("nDV"))),
@@ -637,6 +790,7 @@ Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
         muRef_(gasProperties_.lookup("muRef")),
         Pr_(readScalar(gasProperties_.lookup("Pr"))),
         KInner_((gasProperties_.lookupOrDefault("KInner", 0))),
+        mpiReducer_(args, argc, argv), // args comes from setRootCase.H in dugksFoam.C;
         DV_(0),
         rhoSurf_
         (
@@ -778,21 +932,31 @@ Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::fvDVM::~fvDVM()
-{}
+{
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 void Foam::fvDVM::evolution()
 {
+    //Info << "Begin evolution" << endl;
     updateGHbarPvol();
+    //Info << "Done updateGHbarPvol " << endl;
     updateGHbarSurf();
+    //Info << "Done updateGHbarSurf " << endl;
     updateMaxwellWallRho();
+    //Info << "Done updateMaxwellWallRho " << endl;
     updateGHbarSurfMaxwellWallIn();
+    //Info << "Done updateGHbarSurfMaxwellWallIn " << endl;
     updateGHbarSurfSymmetryIn();
+    //Info << "Done updateGHbarSurfSymmetryIn " << endl;
     updateMacroSurf();
+    //Info << "Done updateMacroSurf " << endl;
     updateGHsurf();
+    //Info << "Done updateGHsurf " << endl;
     updateGHtildeVol();
+    //Info << "Done updateGHtildeVol " << endl;
     updateMacroVol();
 }
 
@@ -806,5 +970,12 @@ void Foam::fvDVM::getCoNum(scalar& maxCoNum, scalar& meanCoNum)
     maxCoNum = gMax(UbyDx)*dt;
     meanCoNum = gSum(UbyDx)/UbyDx.size()*dt;
 }
+
+
+const fieldMPIreducer& Foam::fvDVM::mpiReducer() const
+{
+    return mpiReducer_;
+}
+
 
 // ************************************************************************* //

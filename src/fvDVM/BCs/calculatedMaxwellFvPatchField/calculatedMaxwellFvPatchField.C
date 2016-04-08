@@ -23,6 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include <mpi.h>
 #include "calculatedMaxwellFvPatchField.H"
 #include "dictionary.H"
 
@@ -142,7 +143,21 @@ void calculatedMaxwellFvPatchField<Type>::evaluate(const Pstream::commsTypes)
     {
         this->updateCoeffs();
     }
+
+    //- Get global outgoing density flux at wall
+    //Field<Type> outGoingPart(outGoing_);
+    //MPI_Allreduce(
+        //outGoingPart.data(),
+        //outGoing_.data(),
+        //outGoing_.size(),
+        //MPI_DOUBLE,
+        //MPI_SUM,
+        //MPI_COMM_WORLD
+    //);
+
     fvPatchField<Type>::operator==(outGoing_/mag(inComingByRho_));
+    //- Debug
+    //Info << inComingByRho_ << endl;
     fvPatchField<Type>::evaluate();
     // reset outGoing to zero
     outGoing_ = pTraits<Type>::zero;
