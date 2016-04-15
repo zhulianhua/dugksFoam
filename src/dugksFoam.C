@@ -46,9 +46,6 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "readTimeControlsExplicit.H"
 
-    //
-    Info << args.args() << endl;
-
     fvDVM dvm(rho, U, T, &argc, &argv, args);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

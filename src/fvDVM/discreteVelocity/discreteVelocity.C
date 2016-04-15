@@ -802,7 +802,7 @@ void Foam::discreteVelocity::updateGHsurf()
         //       such as mixed or maxwell, I have to explicitly calculate the unchanged boundary values.
         forAll(gSurfPatch, facei)
         {
-            if ( (xii&(SfPatch[facei])) > 0 &&   // Here, if delted , the free stream BC may bo s problem
+            if ( (xii&(SfPatch[facei])) > 0    // Here, if delted , the free stream BC may bo s problem
             && gBarPvol_.boundaryField()[patchi].type() != "processor"
             && gBarPvol_.boundaryField()[patchi].type() != "processorCyclic"
             && gBarPvol_.boundaryField()[patchi].type() != "cyclic")
@@ -939,9 +939,7 @@ void Foam::discreteVelocity::equilibriumMaxwell
     const Foam::fvPatchScalarField&    T
 )
 {
-    //No need to consider the dimensionSet!!
-    scalar Ri = dvm_.R().value(); //but R has dimensionSet
-    //vector xii = xi_;
+    scalar Ri = dvm_.R().value(); 
     label D = mesh_.nSolutionD();
     vector xii = xi_.value();
     geq == rho/pow(sqrt(2.0*pi*Ri*T),D)*exp(-magSqr(U - xii)/(2.0*Ri*T));

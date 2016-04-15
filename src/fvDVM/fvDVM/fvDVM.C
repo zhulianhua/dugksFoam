@@ -269,8 +269,11 @@ void Foam::fvDVM::initialiseDV()
         }
     }
 
-    Info<< "fvDVM : Allocated " << XisGlobal.size()
-        << " discrete velocities" << endl;
+    if(mpiReducer_.rank() == 0)
+    {
+        Info<< "fvDVM : Allocated " << XisGlobal.size()
+            << " discrete velocities" << endl;
+    }
     label nA = nXi_ / mpiReducer_.nproc();
     label nB = nXi_ - nA*mpiReducer_.nproc();
     label nXiPart = nA + (label)(mpiReducer_.rank() < nB);
@@ -282,7 +285,7 @@ void Foam::fvDVM::initialiseDV()
     }
     label chunk = 0;
     label gid = 0;
-    Info << "nproc" << mpiReducer_.nproc() << endl;
+    //Info << "nproc" << mpiReducer_.nproc() << endl;
     forAll(DV_, i)
     {
         gid = chunk + mpiReducer_.rank();

@@ -46,8 +46,6 @@ void fieldMPIreducer::reduceField(volScalarField& vsf)
         MPI_SUM,
         MPI_COMM_WORLD
     );
-    //forAll(vsf.boundaryField(), patchi)
-        //reduceField(vsf.boundaryField()[patchi]);
 }
 
 void fieldMPIreducer::reduceField(surfaceScalarField& ssf)
