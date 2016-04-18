@@ -1,6 +1,7 @@
 BCs/calculatedMaxwellFvPatchField/calculatedMaxwellFvPatchFields.C
 BCs/maxwellWallFvsPatchField/maxwellWallFvsPatchFields.C
 BCs/mixedFvsPatchField/mixedFvsPatchFields.C
+BCs/symmetryModFvPatchField/symmetryModFvPatchFields.C
 BCs/DVMsymmetryFvsPatchField/DVMsymmetryFvsPatchFields.C
 BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.C
 discreteVelocity/discreteVelocity.C

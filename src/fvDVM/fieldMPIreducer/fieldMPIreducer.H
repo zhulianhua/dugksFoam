@@ -16,6 +16,10 @@ private:
     MPI_Op opSumVec_;
     //-  user defined MPI_Datatype for OpenFOAM vector data
     MPI_Datatype vecType_;
+    //-  user defined MPI_Operator
+    MPI_Op opSumTensor_;
+    //-  user defined MPI_Datatype for OpenFOAM vector data
+    MPI_Datatype tensorType_;
 
     //- dvParallel ?
     bool dvParallel_;
@@ -35,6 +39,7 @@ public:
             void reduceField(surfaceScalarField& ssf);
             void reduceField(Field<scalar>& sf);
             void reduceField(Field<vector>& vf);
+            void reduceField(Field<tensor>& vf);
 
         //- Access
             inline int nproc() const {return nproc_;};

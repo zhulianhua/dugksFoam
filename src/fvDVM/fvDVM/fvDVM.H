@@ -213,6 +213,9 @@ class fvDVM
         //  do it only at the beginnig
         void setCalculatedMaxwellRhoBC();
 
+        //- set the size of dfContainer of the symmetry patch 
+        void setSymmetryModRhoBC();
+
         //- 1. Update h/g bar plus at cell center, per DV
         void updateGHbarPvol();
 
@@ -240,6 +243,8 @@ class fvDVM
 
         //- 6. update Macros at cell centers, global DV
         void updateMacroVol();
+
+        void writeDF(label cellId);
 
 
         //- Disallow default bitwise copy construct

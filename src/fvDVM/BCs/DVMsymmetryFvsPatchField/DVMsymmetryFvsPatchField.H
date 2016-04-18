@@ -129,7 +129,7 @@ public:
             //  Poissons equations.
             virtual bool fixesValue() const
             {
-                return true;
+                return false;
             }
 
 
