@@ -46,6 +46,7 @@ public:
             inline int rank() const {return rank_;};
         //- Static member function
             static void vectorSum( vector *in, vector *inout, int *len, MPI_Datatype *dptr );
+            static void tensorSum( tensor *in, tensor *inout, int *len, MPI_Datatype *dptr );
 
 };
 #endif 

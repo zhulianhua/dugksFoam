@@ -15,7 +15,7 @@ fieldMPIreducer::fieldMPIreducer (
         MPI_Type_commit(&vecType_);
         MPI_Type_commit(&tensorType_);
         MPI_Op_create((MPI_User_function *)vectorSum, 1, &opSumVec_);
-        MPI_Op_create((MPI_User_function *)vectorSum, 1, &opSumTensor_);
+        MPI_Op_create((MPI_User_function *)tensorSum, 1, &opSumTensor_);
 
         MPI_Comm_rank(MPI_COMM_WORLD,&rank_ );
         MPI_Comm_size(MPI_COMM_WORLD,&nproc_);
@@ -129,7 +129,7 @@ void fieldMPIreducer::reduceField(vectorField& vf)
 
 void fieldMPIreducer::reduceField(tensorField& vf)
 {
-    List<vector> vfPart(vf);
+    List<tensor> vfPart(vf);
     MPI_Allreduce
     (
         vfPart.data(),
@@ -142,6 +142,15 @@ void fieldMPIreducer::reduceField(tensorField& vf)
 }
 
 void fieldMPIreducer::vectorSum( vector *in, vector *inout, int *len, MPI_Datatype *dptr )
+{
+    int i;
+    for (i=0; i< *len; ++i) {
+        *inout  = *in + *inout;
+        in++; inout++;
+    }
+}
+
+void fieldMPIreducer::tensorSum( tensor *in, tensor *inout, int *len, MPI_Datatype *dptr )
 {
     int i;
     for (i=0; i< *len; ++i) {

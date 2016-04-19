@@ -551,6 +551,11 @@ void Foam::fvDVM::updateMacroSurf()
                 stressPatch[facei] = 
                     2.0*tauPatch[facei]/(2.0*tauPatch[facei] + 0.5*time_.deltaT().value())*stressPatch[facei];
             }
+            if(args_.optionFound("dvParallel"))
+            {
+                mpiReducer_.reduceField(qPatch);
+                mpiReducer_.reduceField(stressPatch);
+            }
         }
     }
 }
@@ -566,6 +571,9 @@ void Foam::fvDVM::updateGHtildeVol()
 {
     forAll(DV_, DVid)
         DV_[DVid].updateGHtildeVol();
+    //writeDF(1940);
+    //writeDF(1901);
+    //writeDF(1011);
 }
 
 void Foam::fvDVM::updateMacroVol()
@@ -786,7 +794,7 @@ void Foam::fvDVM::writeDF(label cellId)
             label ldi = i/nproc;
             df[i] = dfRcv[displ[p]+ldi];
         }
-        df.write();
+        //df.write();
     }
 }
 
