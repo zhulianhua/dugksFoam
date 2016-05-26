@@ -13,6 +13,15 @@ An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinet
 * Various boundary condition types.
 
 ## Installation and documentation
+```bash
+of240 # change the version code according your OF installation
+cd dugksFoam
+# change from g++/icpc to mpicxx to support velocity space decomposition MPI parallel computing ability.
+cp $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++ $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++.bak # make a backup.
+sed -i "s/$WM_CXX/mpicxx/"  $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++ 
+./Allwmake
+```
+
 See `dugksFoam.pdf` in `doc` directory, or download it [here](https://github.com/zhulianhua/dugksFoam/raw/master/doc/dugksFoam.pdf).
 
 ## References
