@@ -244,7 +244,6 @@ class fvDVM
         //- 6. update Macros at cell centers, global DV
         void updateMacroVol();
 
-        void writeDF(label cellId);
 
 
         //- Disallow default bitwise copy construct
@@ -367,6 +366,9 @@ class fvDVM
             const GeometricField<scalar, PatchType, GeoMesh>& T, 
             const GeometricField<scalar, PatchType, GeoMesh>& rho
         );
+
+        //- write DF
+        void writeDF(label cellId);
 };
 
 

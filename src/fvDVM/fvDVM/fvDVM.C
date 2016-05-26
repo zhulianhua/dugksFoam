@@ -571,9 +571,6 @@ void Foam::fvDVM::updateGHtildeVol()
 {
     forAll(DV_, DVid)
         DV_[DVid].updateGHtildeVol();
-    //writeDF(1940);
-    //writeDF(1901);
-    //writeDF(1011);
 }
 
 void Foam::fvDVM::updateMacroVol()
@@ -743,8 +740,6 @@ void Foam::fvDVM::writeDF(label cellId)
 {
     std::ostringstream convert;
     convert << cellId;
-    //word cellIdStr;
-    //cellIdStr>>cellId;
     scalarIOList df
     (
         IOobject
@@ -794,7 +789,7 @@ void Foam::fvDVM::writeDF(label cellId)
             label ldi = i/nproc;
             df[i] = dfRcv[displ[p]+ldi];
         }
-        //df.write();
+        df.write();
     }
 }
 

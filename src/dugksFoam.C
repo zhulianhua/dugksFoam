@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
 
         dvm.evolution();
 
+        //write DF
+
         if(dvm.mpiReducer().rank() == 0)
         {
             runTime.write();
