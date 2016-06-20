@@ -44,6 +44,13 @@ If you are using OpenFOAM older than 2.4.0, fix it by this command:
 git apply PatchMeshToolIssue
 \end{verbatim}
 
+\item Change the compier from CXX to MPICXX, because we implemented the velocity-space parallel feature which use the standard alone MPI instead of the Pstream library of OpenFOAM.
+\begin{verbatim}cp $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++ \
+    $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++.bak
+sed -i "s/$WM_CXX/mpicxx/"  \
+    $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++ 
+\end{verbatim}
+
 \item Compile the dugksFoam by:
 \begin{verbatim}
 ./Allwmake

@@ -1,6 +1,6 @@
 VERS = 1.0
 FILES = biblio.tex installation.tex demo.tex contrib.tex lshort.sty mylayout.sty title.tex \
-	dugksFoam.tex overview.tex fancyhea.sty \
+	dugksFoam.tex overview.tex fancyhea.sty changelog.tex\
 	lshort-base.tex appendix.tex
 
 # Define some variables

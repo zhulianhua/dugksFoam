@@ -301,13 +301,22 @@ To run \verb|dugksFoam| serially,
 \begin{verbatim}
     dugksFoam
 \end{verbatim}
-To run \verb|dugksFoam| in parallel with \verb|mpirun|, you should firstly decompose the computational domain use the tool \verb|decomposePar|.
+You can run dugksFoam in parallel either by physical space decomposition or by velocity space decomposition.
+
+To use physical space decomposition approach,  you should firstly decompose the computational domain use the tool \verb|decomposePar|.
 Refer the OpenFOAM official User'S Guide to see how.
 After the domain decomposition, you can run \verb|dugksFoam| in parallel by
 \begin{verbatim}
     mpirun  -np 8 dugksFoam -parallel
 \end{verbatim}
 where 8 means to use MPI processes.
+
+To use the velocity space decomposition approach, there is no need to run \verb|decomposePar| and \verb|recomposePar|.
+Just run mpirun by
+\begin{verbatim}
+    mpirun  -np 8 dugksFoam -dVparallel
+\end{verbatim}
+
 \subsection{Post processing}
 After running the solver, you can see the immediate results directories.
 If you run in parallel, you have to reconstruct the results files by \verb|reconstructPar| first.

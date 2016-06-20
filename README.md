@@ -22,7 +22,7 @@ sed -i "s/$WM_CXX/mpicxx/"  $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++
 ./Allwmake
 ```
 
-See `dugksFoam.pdf` in `doc` directory, or download it [here](https://github.com/zhulianhua/dugksFoam/raw/master/doc/dugksFoam.pdf).
+See more details in `dugksFoam.pdf` in the `doc` directory, or download it [here](https://github.com/zhulianhua/dugksFoam/raw/master/doc/dugksFoam.pdf).
 
 ## References
 * [1] Z.L. Guo, K. Xu, R.J. Wang, Discrete unified gas kinetic scheme for all Knudsen number flows: low-speed isothermal case, [Phys. Rev. E, 88 (2013) 033305](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.88.033305).
