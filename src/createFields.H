@@ -80,4 +80,3 @@ volVectorField Uold
 Told = T;
 rhoOld = rho;
 Uold = U;
-Told = T;
