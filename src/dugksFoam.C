@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
                     deltaU = mag(U-Uold);
 
                 TemperatureChange = gSum(deltaTem())/gSum(T);
-                rhoChange         = gSum(deltaRho())/gSum(T);
+                rhoChange         = gSum(deltaRho())/gSum(rho);
                 Uchange           = gSum(deltaU())/gSum(mag(U)());
 
                 Info << "Temperature changes = " << TemperatureChange << endl;
