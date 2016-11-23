@@ -309,6 +309,25 @@ void Foam::discreteVelocity::setBCtype()
                 )
             );
         }
+        else if (rhoBCs[patchi].type() == "farField") //maxwellWall
+        {
+            gSurf_.boundaryField().set
+            (
+                patchi, 
+                fvsPatchField<scalar>::New
+                (
+                    "farField", mesh_.boundary()[patchi], gSurf_
+                )
+            );
+            hSurf_.boundaryField().set
+            (
+                patchi, 
+                fvsPatchField<scalar>::New
+                (
+                    "farField", mesh_.boundary()[patchi], hSurf_
+                )
+            );
+        }
         else if (rhoBCs[patchi].type() == "symmetryMod") //maxwellWall
         {
             gSurf_.boundaryField().set
@@ -556,6 +575,12 @@ void Foam::discreteVelocity::updateGHbarSurf()
         const fvsPatchField<vector>& CfPatch =
             mesh_.Cf().boundaryField()[patchi];
         const labelUList& faceCells = mesh_.boundary()[patchi].faceCells();
+
+        const fvPatchScalarField& rhoVolPatch = 
+            dvm_.rhoVol().boundaryField()[patchi];
+        const fvPatchScalarField& TvolPatch = 
+            dvm_.Tvol().boundaryField()[patchi];
+        const labelUList& pOwner = mesh_.boundary()[patchi].faceCells();
         
         //- NOTE: outging DF can be treate unifily for all BCs, including processor BC
         if (type == "zeroGradient")
@@ -578,6 +603,37 @@ void Foam::discreteVelocity::updateGHbarSurf()
                       + ((iHbarPgrad[faceCells[facei]])
                        &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
                 //incoming and parallel to face, not changed.
+                }
+            }
+        }
+        else if (type == "farField")
+        {
+            //check each boundary face in the patch
+            forAll(gSurfPatch, facei)
+            {
+                //out or in ?
+                if ((xii&SfPatch[facei]) > 0 ) // outgoing
+                {
+                    gSurfPatch[facei] = iGbarPvol[faceCells[facei]] 
+                      + ((iGbarPgrad[faceCells[facei]])
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
+                    hSurfPatch[facei] = iHbarPvol[faceCells[facei]] 
+                      + ((iHbarPgrad[faceCells[facei]])
+                       &(CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt));
+                //incoming and parallel to face, not changed.
+                }
+                else // incomming, set to be equlibrium, give rho and T, extropolate U
+                {
+                    // set to maxwellian
+                    gSurfPatch[facei] = rhoVolPatch[facei]
+                       *equilibriumMaxwellByRho
+                        (
+                            dvm_.Uvol()[pOwner[facei]],
+                            TvolPatch[facei]
+                        );
+                    hSurfPatch[facei] = 
+                        gSurfPatch[facei]*(dvm_.R().value()*TvolPatch[facei])
+                       *(dvm_.KInner() + 3 - mesh_.nSolutionD());
                 }
             }
         }
