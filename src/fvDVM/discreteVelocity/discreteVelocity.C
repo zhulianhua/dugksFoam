@@ -972,9 +972,9 @@ Foam::discreteVelocity::equilibriumMaxwell
         )
     );
     GeometricField<scalar, PatchType, GeoMesh>& equ = tEqu();
-    equ = rho/pow(sqrt(2.0*pi*R*T),D)*exp(-magSqr(U - xi_)/(2.0*R*T))
-        /pow(vUnit, 3-D);
-    //equ = rho/((2.0*pi*R*T))*exp(-magSqr(U - xi_)/(2.0*R*T))/vUnit;
+    //equ = rho/pow(sqrt(2.0*pi*R*T),D)*exp(-magSqr(U - xi_)/(2.0*R*T))
+        ///pow(vUnit, 3-D);
+    equ = rho/((2.0*pi*R*T))*exp(-magSqr(U - xi_)/(2.0*R*T))/vUnit;
     return tEqu;
 }
 
@@ -1001,8 +1001,10 @@ void Foam::discreteVelocity::equilibriumShakhov
     GeometricField<scalar, PatchType, GeoMesh> cqBy5pRT 
         = ((xi_ - U)&q)/(5.0*rho*R*T*R*T);
 
+    //GeometricField<scalar, PatchType, GeoMesh> gEqBGK 
+        //= rho/pow(sqrt(2.0*pi*R*T),D)*exp(-cSqrByRT/2.0)/pow(vUnit, 3-D);
     GeometricField<scalar, PatchType, GeoMesh> gEqBGK 
-        = rho/pow(sqrt(2.0*pi*R*T),D)*exp(-cSqrByRT/2.0)/pow(vUnit, 3-D);
+        = rho/(2.0*pi*R*T)*exp(-cSqrByRT/2.0)/vUnit;
 
     gEq = ( 1.0 + (1.0 - Pr)*cqBy5pRT*(cSqrByRT - D - 2.0) )*gEqBGK;
     hEq = ( (K + 3.0 - D) + (1.0 - Pr)*cqBy5pRT*((cSqrByRT - D)*(K + 3.0 - D) - 2*K) )*gEqBGK*R*T;
@@ -1020,7 +1022,8 @@ void Foam::discreteVelocity::equilibriumMaxwell
     scalar Ri = dvm_.R().value(); 
     label D = mesh_.nSolutionD();
     vector xii = xi_.value();
-    geq == rho/pow(sqrt(2.0*pi*Ri*T),D)*exp(-magSqr(U - xii)/(2.0*Ri*T));
+    //geq == rho/pow(sqrt(2.0*pi*Ri*T),D)*exp(-magSqr(U - xii)/(2.0*Ri*T));
+    geq == rho/(2.0*pi*Ri*T)*exp(-magSqr(U - xii)/(2.0*Ri*T));
     heq == (dvm_.KInner() + 3-D)*Ri*T*geq;
 }
 
@@ -1035,7 +1038,8 @@ Foam::scalar Foam::discreteVelocity::equilibriumMaxwellByRho
     scalar Ri = dvm_.R().value(); //but R has dimensionSet
     label D = mesh_.nSolutionD();
     vector xii = xi_.value();
-    feqByRho = 1.0/pow(sqrt(2.0*pi*Ri*T),D)*exp(-magSqr(U - xii)/(2.0*Ri*T));
+    //feqByRho = 1.0/pow(sqrt(2.0*pi*Ri*T),D)*exp(-magSqr(U - xii)/(2.0*Ri*T));
+    feqByRho = 1.0/(2.0*pi*Ri*T)*exp(-magSqr(U - xii)/(2.0*Ri*T));
     return feqByRho;
 }
 
