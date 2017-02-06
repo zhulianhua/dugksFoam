@@ -2,6 +2,6 @@
 cd ${0%/*} || exit 1    # run from this directory
 set -x
 
-(wmake libso fvDVM && wmake)
+(./wmake libso fvDVM && ./wmake)
 
 # ----------------------------------------------------------------- end-of-file
