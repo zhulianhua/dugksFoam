@@ -244,7 +244,8 @@ class fvDVM
         //- 6. update Macros at cell centers, global DV
         void updateMacroVol();
 
-
+        //- 7. update pressureIn/Out BC
+        void updatePressureInOutBC();
 
         //- Disallow default bitwise copy construct
         fvDVM(const fvDVM&);

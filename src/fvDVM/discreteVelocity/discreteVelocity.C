@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "fvDVM.H"
+#include <map>
 #include "discreteVelocity.H"
 #include "constants.H"
 #include "fixedGradientFvPatchField.H"
@@ -207,7 +208,6 @@ Foam::discreteVelocity::discreteVelocity
 Foam::discreteVelocity::~discreteVelocity()
 {}
 
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 void Foam::discreteVelocity::initDFtoEq()
@@ -247,19 +247,42 @@ void Foam::discreteVelocity::setBCtype()
     // for all patchi fo h/g barP, set to zeroGradient
     // May improve for inlet ingoing DF
 
+    // NOTE: symmetryBoundary condition used for VSD (velocity space decompose) parallel run.
+    // For normal PSD (physical velocity space decomposition) parallel run, 
+    // the B.C. for symmetry Boundary are just symmetryPlane type,  and since symmetryPlane 
+    // for the rho Boundary is  a geometry constraint B.C. type, the coressponding B.C. type for 
+    // gSurf_ and hSurf_ will be automatically assigned to be symmetryPlane.
+    //
+    // NOTE: farField for rho BC is not currently used
+
     const GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = dvm_.rhoVol().boundaryField();
 
+    // bondary condition type map from rho BC to g/hSuf BC
+    std::map<word, word> bcMap;
+    bcMap["fixedValue"] = "mixed"; // For supersonic out boundary only
+    bcMap["zeroGradient"] = "zeroGradient"; 
+    bcMap["calculatedMaxwell"] = "calculatedMaxwell"; // Maxwell wall
+    bcMap["farField"] = "farField"; // Incoming DF are EQ, with undering macro possiblly updated with time
+    bcMap["symmetryMod"] = "DVMsymmetry"; // used in VSD
+    bcMap["pressureIn"] = "farField"; // Pressure inlet
+    bcMap["pressureOut"] = "farField"; // Pressure outlet
+
+    // geometry constraint boundary are not specifid here,
+    // they are automatically assigned, including:
+    // cyclic, processor, processorCyclic, symmetryPlane
+
     forAll(rhoBCs, patchi)
     {
-        if (rhoBCs[patchi].type() == "fixedValue") //inlet
+        word rhoBCtype = rhoBCs[patchi].type();
+        if( bcMap.find(rhoBCtype) != bcMap.end() ) // found
         {
             gSurf_.boundaryField().set
             (
                 patchi, 
                 fvsPatchField<scalar>::New
                 (
-                    "mixed", mesh_.boundary()[patchi], gSurf_
+                    bcMap[rhoBCtype], mesh_.boundary()[patchi], gSurf_
                 )
             );
             hSurf_.boundaryField().set
@@ -267,83 +290,7 @@ void Foam::discreteVelocity::setBCtype()
                 patchi, 
                 fvsPatchField<scalar>::New
                 (
-                    "mixed", mesh_.boundary()[patchi], hSurf_
-                )
-            );
-        }
-        else if (rhoBCs[patchi].type() == "zeroGradient") //outlet
-        {
-            gSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "zeroGradient", mesh_.boundary()[patchi], gSurf_
-                )
-            );
-            hSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "zeroGradient", mesh_.boundary()[patchi], hSurf_
-                )
-            );
-        }
-        else if (rhoBCs[patchi].type() == "calculatedMaxwell") //maxwellWall
-        {
-            gSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "maxwellWall", mesh_.boundary()[patchi], gSurf_
-                )
-            );
-            hSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "maxwellWall", mesh_.boundary()[patchi], hSurf_
-                )
-            );
-        }
-        else if (rhoBCs[patchi].type() == "farField") //maxwellWall
-        {
-            gSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "farField", mesh_.boundary()[patchi], gSurf_
-                )
-            );
-            hSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "farField", mesh_.boundary()[patchi], hSurf_
-                )
-            );
-        }
-        else if (rhoBCs[patchi].type() == "symmetryMod") //maxwellWall
-        {
-            gSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "DVMsymmetry", mesh_.boundary()[patchi], gSurf_
-                )
-            );
-            hSurf_.boundaryField().set
-            (
-                patchi, 
-                fvsPatchField<scalar>::New
-                (
-                    "DVMsymmetry", mesh_.boundary()[patchi], hSurf_
+                    bcMap[rhoBCtype], mesh_.boundary()[patchi], hSurf_
                 )
             );
         }
@@ -360,7 +307,6 @@ void Foam::discreteVelocity::initBoundaryField()
         gBCs = gSurf_.boundaryField();
     GeometricField<scalar, fvsPatchField, surfaceMesh>::GeometricBoundaryField& 
         hBCs = hSurf_.boundaryField();
-
 
     forAll(gBCs, patchi)
     {

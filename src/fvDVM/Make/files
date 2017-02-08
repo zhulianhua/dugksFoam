@@ -6,6 +6,8 @@ BCs/farFieldFvPatchField/farFieldFvPatchFields.C
 BCs/symmetryModFvPatchField/symmetryModFvPatchFields.C
 BCs/DVMsymmetryFvsPatchField/DVMsymmetryFvsPatchFields.C
 BCs/zeroGradientFvsPatchField/zeroGradientFvsPatchFields.C
+BCs/pressureInFvPatchField/pressureInFvPatchFields.C
+BCs/pressureOutFvPatchField/pressureOutFvPatchFields.C
 discreteVelocity/discreteVelocity.C
 zeroBoundaryGrad/zeroBoundaryVectors.C
 zeroBoundaryGrad/zeroBoundaryGrads.C
