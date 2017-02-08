@@ -29,6 +29,8 @@ License
 #include "fvm.H"
 #include "calculatedMaxwellFvPatchField.H"
 #include "symmetryModFvPatchField.H"
+#include "pressureInFvPatchField.H"
+#include "pressureOutFvPatchField.H"
 #include "scalarIOList.H"
 #include "fieldMPIreducer.H"
 
@@ -706,6 +708,79 @@ void Foam::fvDVM::updateMacroVol()
     qVol_ = 2.0*tauVol_/(2.0*tauVol_ + time_.deltaT()*Pr_)*qVol_;
 }
 
+void Foam::fvDVM::updatePressureInOutBC()
+{
+    // for pressureIn and pressureOut BC, the boundary value of Uvol(in/out) and Tvol(in/out) should be updated here!
+    // boundary faces
+    GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
+        rhoBCs = rhoVol_.boundaryField();
+    forAll(rhoBCs, patchi)
+    {
+        if (rhoBCs[patchi].type() == "pressureIn")
+        {
+            const fvsPatchField<vector>& SfPatch = mesh_.Sf().boundaryField()[patchi];
+            const fvsPatchField<scalar>& magSfPatch = mesh_.magSf().boundaryField()[patchi];
+            pressureInFvPatchField<scalar>& rhoPatch = 
+                refCast<pressureInFvPatchField<scalar> >(rhoBCs[patchi]);
+            fvPatchField<vector>& Upatch = Uvol_.boundaryField()[patchi];
+            const fvPatchField<scalar>& Tpatch = Tvol_.boundaryField()[patchi];
+            const scalar pressureIn = rhoPatch.pressureIn();
+            // now changed rho and U patch
+            const labelUList& pOwner = mesh_.boundary()[patchi].faceCells();
+            forAll(rhoPatch, facei)
+            {
+                const scalar  Tin = Tpatch[facei];
+                // change density
+                rhoPatch[facei] = pressureIn/R_.value()/Tin; // Accturally not changed at all :p
+
+                // inner boundary cell data state data
+                label own = pOwner[facei];
+                vector Ui = Uvol_[own];
+                scalar Ti = Tvol_[own];
+                scalar rhoi = rhoVol_[own];
+                scalar ai = sqrt(R_.value() * Ti * (KInner_ + 5)/(KInner_ + 3)); // sos
+
+                // change normal velocity component based on the characteristics
+                vector norm = SfPatch[facei]/magSfPatch[facei]; // boundary face normal vector
+                scalar Un = Ui & norm; // normal component
+                scalar UnIn = Un + (pressureIn - rhoi * R_.value() * Ti)/rhoi/ai; // change normal component
+                Upatch[facei] = UnIn * norm + (Ui - Un * norm); // tangential component not changed.
+            }
+        }
+        else if(rhoBCs[patchi].type() == "pressureOut")
+        {
+            const fvsPatchField<vector>& SfPatch = mesh_.Sf().boundaryField()[patchi];
+            const fvsPatchField<scalar>& magSfPatch = mesh_.magSf().boundaryField()[patchi];
+            pressureOutFvPatchField<scalar>& rhoPatch = 
+                refCast<pressureOutFvPatchField<scalar> >(rhoBCs[patchi]);
+            fvPatchField<vector>& Upatch = Uvol_.boundaryField()[patchi];
+            fvPatchField<scalar>& Tpatch = Tvol_.boundaryField()[patchi];
+            const scalar pressureOut = rhoPatch.pressureOut();
+            // now changed rho and U patch
+            const labelUList& pOwner = mesh_.boundary()[patchi].faceCells();
+            forAll(rhoPatch, facei)
+            {
+                // inner cell data state data
+                label own = pOwner[facei];
+                vector Ui = Uvol_[own];
+                scalar Ti = Tvol_[own];
+                scalar rhoi = rhoVol_[own];
+                scalar ai = sqrt(R_.value() * Ti * (KInner_ + 5)/(KInner_ + 3)); // sos
+
+                // change outlet density
+                rhoPatch[facei] = rhoi  +  (pressureOut - rhoi * R_.value() * Ti)/ai/ai; // Accturally not changed at all :p
+                Tpatch[facei] = pressureOut/(R_.value() * rhoi);
+
+                // change normal velocity component based on the characteristics
+                vector norm = SfPatch[facei]/magSfPatch[facei]; // boundary face normal vector
+                scalar Un = Ui & norm; // normal component
+                scalar UnIn = Un + ( rhoi * R_.value() * Ti - pressureOut)/rhoi/ai; // change normal component
+                Upatch[facei] = UnIn * norm + (Ui - Un * norm); // tangential component not changed.
+            }
+        }
+    }
+}
+
 template<template<class> class PatchType, class GeoMesh> 
 Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
     Foam::fvDVM::updateTau
@@ -980,6 +1055,8 @@ void Foam::fvDVM::writeDF(label cellId)
     initialiseDV();
     setCalculatedMaxwellRhoBC();
     setSymmetryModRhoBC();
+    // set initial rho in pressureIn/Out BC
+    updatePressureInOutBC();
     tauVol_ = updateTau(Tvol_, rhoVol_); //calculate the tau at cell when init
     Usurf_ = fvc::interpolate(Uvol_, "linear"); // for first time Dt calculation.
 }
@@ -1013,6 +1090,8 @@ void Foam::fvDVM::evolution()
     updateGHtildeVol();
     //Info << "Done updateGHtildeVol " << endl;
     updateMacroVol();
+    //
+    updatePressureInOutBC();
 }
 
 
