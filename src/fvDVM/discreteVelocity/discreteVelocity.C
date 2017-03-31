@@ -262,7 +262,7 @@ void Foam::discreteVelocity::setBCtype()
     std::map<word, word> bcMap;
     bcMap["fixedValue"] = "mixed"; // For supersonic out boundary only
     bcMap["zeroGradient"] = "zeroGradient"; 
-    bcMap["calculatedMaxwell"] = "calculatedMaxwell"; // Maxwell wall
+    bcMap["calculatedMaxwell"] = "maxwellWall"; // Maxwell wall
     bcMap["farField"] = "farField"; // Incoming DF are EQ, with undering macro possiblly updated with time
     bcMap["symmetryMod"] = "DVMsymmetry"; // used in VSD
     bcMap["pressureIn"] = "farField"; // Pressure inlet
