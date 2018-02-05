@@ -40,7 +40,19 @@ License
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-makeFvGradScheme(VenkatakrishnanLimitedGrad)
+#if FOAM_MAJOR <= 2
+namespace Foam
+{
+namespace fv
+{
+#endif
+
+    makeFvGradScheme(VenkatakrishnanLimitedGrad)
+
+#if FOAM_MAJOR <= 2
+}
+}
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
