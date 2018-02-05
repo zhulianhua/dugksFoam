@@ -44,12 +44,12 @@ inline Foam::volScalarField& Foam::fvDVM::rhoVol()
     return rhoVol_;
 }
 
-inline const Foam::volScalarField& Foam::fvDVM::Tvol() const
+inline Foam::volScalarField& Foam::fvDVM::Tvol() const
 {
     return Tvol_;
 }
 
-inline const Foam::volVectorField& Foam::fvDVM::Uvol() const
+inline Foam::volVectorField& Foam::fvDVM::Uvol() const
 {
     return Uvol_;
 }

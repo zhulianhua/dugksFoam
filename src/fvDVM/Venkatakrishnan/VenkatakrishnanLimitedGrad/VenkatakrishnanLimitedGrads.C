@@ -23,6 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "foam_defs.h"
 #include "VenkatakrishnanLimitedGrad.H"
 #include "gaussGrad.H"
 #include "fvMesh.H"
@@ -31,15 +32,15 @@ License
 #include "volFields.H"
 #include "fixedValueFvPatchFields.H"
 
+#if FOAM_MAJOR <= 3
+    #define BOUNDARY_FIELD_REF boundaryField()
+#else
+    #define BOUNDARY_FIELD_REF boundaryFieldRef()
+#endif
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
-{
-namespace fv
-{
-    makeFvGradScheme(VenkatakrishnanLimitedGrad)
-}
-}
+makeFvGradScheme(VenkatakrishnanLimitedGrad)
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -60,7 +61,7 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
         return tGrad;
     }
 
-    volVectorField& g = tGrad();
+    volVectorField g = tGrad();
 
     const labelUList& owner = mesh.owner();
     const labelUList& neighbour = mesh.neighbour();
@@ -88,7 +89,11 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
     }
 
 
+#if FOAM_MAJOR <= 3
     const volScalarField::GeometricBoundaryField& bsf = vsf.boundaryField();
+#else
+    const volScalarField::Boundary bsf = vsf.boundaryField();
+#endif
 
     forAll(bsf, patchi)
     {
@@ -126,7 +131,19 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
     minVsf -= vsf;
 
     // create limiter
-    scalarField limiter(vsf.internalField().size(), 1.0);
+    volScalarField limiter(
+        IOobject
+        (
+            "limiter",
+            mesh.time().timeName(),
+            mesh, 
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zeroes", dimensionSet(0,0,0,0,0,0,0), 0)
+    );
+    // scalarField limiter(vsf.internalField().size(), 1.0);
 
     scalar limiterTemp = 1.0;
 
@@ -188,7 +205,8 @@ Foam::fv::VenkatakrishnanLimitedGrad<Foam::scalar>::calcGrad
             << " average: " << gAverage(limiter) << endl;
     }
 
-    g.internalField() *= limiter;
+    // g.internalField() *= limiter;
+    g *= limiter;
     g.correctBoundaryConditions();
     gaussGrad<scalar>::correctBoundaryConditions(vsf, g);
 

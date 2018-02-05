@@ -28,12 +28,6 @@ License
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
-{
-namespace fv
-{
-    makeFvGradScheme(zeroBoundaryGrad)
-}
-}
+makeFvGradScheme(zeroBoundaryGrad)
 
 // ************************************************************************* //

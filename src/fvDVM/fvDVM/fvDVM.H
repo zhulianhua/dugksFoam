@@ -305,10 +305,10 @@ class fvDVM
         inline volScalarField& rhoVol();
 
         //- Temperature field at cell center
-        inline const volScalarField& Tvol() const;
+        inline volScalarField& Tvol() const;
 
         //- Macro velocity field at cell center
-        inline const volVectorField& Uvol() const; 
+        inline volVectorField& Uvol() const; 
 
         //- Heat flux field at cell center
         inline const volVectorField& qVol() const;
