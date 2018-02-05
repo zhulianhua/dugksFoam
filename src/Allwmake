@@ -2,6 +2,13 @@
 cd ${0%/*} || exit 1    # run from this directory
 set -x
 
+# Create a foam version header file
+HEADERPATH=../inc/FoamDefs/$WM_PROJECT_VERSION/foam_defs.h
+IFS='.' read -ra FOAM_VERSION <<< "$WM_PROJECT_VERSION"
+touch $HEADERPATH
+echo "#define FOAM_MAJOR ${FOAM_VERSION[0]}" > $HEADERPATH
+echo "#define FOAM_MINOR ${FOAM_VERSION[1]}" >> $HEADERPATH
+
 (wmake libso fvDVM && wmake)
 
 # ----------------------------------------------------------------- end-of-file
