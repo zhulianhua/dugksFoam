@@ -1,4 +1,12 @@
+#include "foam_defs.h"
 #include "fieldMPIreducer.H"
+
+#if FOAM_MAJOR <= 3
+    #define BOUNDARY_FIELD_REF boundaryField()
+#else
+    #define BOUNDARY_FIELD_REF boundaryFieldRef()
+#endif
+
 
 fieldMPIreducer::fieldMPIreducer (
     Foam::argList& args,
@@ -64,7 +72,7 @@ void fieldMPIreducer::reduceField(surfaceScalarField& ssf)
         MPI_COMM_WORLD
     );
     forAll(ssf.boundaryField(), patchi)
-        reduceField(ssf.boundaryField()[patchi]);
+        reduceField(ssf.BOUNDARY_FIELD_REF[patchi]);
 }
 
 void fieldMPIreducer::reduceField(volVectorField& vvf)
@@ -80,7 +88,7 @@ void fieldMPIreducer::reduceField(volVectorField& vvf)
         MPI_COMM_WORLD
     );
     forAll(vvf.boundaryField(), patchi)
-        reduceField(vvf.boundaryField()[patchi]);
+        reduceField(vvf.BOUNDARY_FIELD_REF[patchi]);
 }
 
 void fieldMPIreducer::reduceField(surfaceVectorField& svf)
@@ -96,7 +104,7 @@ void fieldMPIreducer::reduceField(surfaceVectorField& svf)
         MPI_COMM_WORLD
     );
     forAll(svf.boundaryField(), patchi)
-        reduceField(svf.boundaryField()[patchi]);
+        reduceField(svf.BOUNDARY_FIELD_REF[patchi]);
 }
 
 void fieldMPIreducer::reduceField(scalarField& sf)

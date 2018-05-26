@@ -23,8 +23,15 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "foam_defs.h"
 #include "zeroBoundaryVectors.H"
 #include "volFields.H"
+
+#if FOAM_MAJOR <= 3
+    #define BOUNDARY_FIELD_REF boundaryField()
+#else
+    #define BOUNDARY_FIELD_REF boundaryFieldRef()
+#endif
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -115,9 +122,13 @@ void Foam::zeroBoundaryVectors::calcLeastSquaresVectors()
         dd[nei] += w[facei]*wdd;
     }
 
-
+#if FOAM_MAJOR <= 3
     surfaceVectorField::GeometricBoundaryField& blsP =
         pVectors_.boundaryField();
+#else
+    surfaceVectorField::Boundary& blsP =
+        pVectors_.BOUNDARY_FIELD_REF;
+#endif
 
     forAll(blsP, patchi)
     {

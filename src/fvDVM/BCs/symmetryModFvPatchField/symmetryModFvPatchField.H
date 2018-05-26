@@ -67,6 +67,7 @@ SourceFiles
 #ifndef symmetryModFvPatchField_H
 #define symmetryModFvPatchField_H
 
+#include "foam_defs.h"
 #include "fvPatchField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -170,7 +171,11 @@ public:
             //- Evaluate the patch field
             virtual void evaluate
             (
+#if FOAM_MAJOR <= 4
                 const Pstream::commsTypes commsType=Pstream::blocking
+#else
+                const Pstream::commsTypes commsType=Pstream::commsTypes::blocking
+#endif
             );
 
         // Mapping functions
