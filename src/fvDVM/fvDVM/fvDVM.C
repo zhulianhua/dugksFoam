@@ -37,6 +37,13 @@ License
 using namespace Foam::constant;
 using namespace Foam::constant::mathematical;
 
+#if FOAM_MAJOR <= 3
+    #define BOUNDARY_FIELD_REF boundaryField()
+#else
+    #define BOUNDARY_FIELD_REF boundaryFieldRef()
+#endif
+
+
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
@@ -255,8 +262,13 @@ void Foam::fvDVM::initialiseDV()
 
 void Foam::fvDVM::setCalculatedMaxwellRhoBC()
 {
+#if FOAM_MAJOR <= 3
     GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = rhoVol_.boundaryField();
+#else
+    GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+        rhoBCs = rhoVol_.BOUNDARY_FIELD_REF;
+#endif
     forAll(rhoBCs, patchi)
     {
         if (rhoBCs[patchi].type() == "calculatedMaxwell")
@@ -299,8 +311,13 @@ void Foam::fvDVM::setCalculatedMaxwellRhoBC()
 void Foam::fvDVM::setSymmetryModRhoBC()
 {
     //prepare the container (set size) to store all DF on the patchi
+#if FOAM_MAJOR <= 3
     GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = rhoVol_.boundaryField();
+#else
+    GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+        rhoBCs = rhoVol_.BOUNDARY_FIELD_REF;
+#endif
     forAll(rhoBCs, patchi)
     {
         label ps = rhoBCs[patchi].size();
@@ -329,8 +346,13 @@ void Foam::fvDVM::updateGHbarSurf()
 
 void Foam::fvDVM::updateMaxwellWallRho()
 {
+#if FOAM_MAJOR <= 3
     GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = rhoVol_.boundaryField();
+#else
+    GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+        rhoBCs = rhoVol_.BOUNDARY_FIELD_REF;
+#endif
     forAll(rhoBCs, patchi)
     {
         if (rhoBCs[patchi].type() == "calculatedMaxwell")
@@ -358,8 +380,13 @@ void Foam::fvDVM::updateGHbarSurfSymmetryIn()
     //{
     label rank  = mpiReducer_.rank();
     label nproc = mpiReducer_.nproc();
+#if FOAM_MAJOR <= 3
     GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = rhoVol_.boundaryField();
+#else
+    GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+        rhoBCs = rhoVol_.BOUNDARY_FIELD_REF;
+#endif
     forAll(rhoBCs, patchi)
     {
         label ps = rhoBCs[patchi].size();
@@ -515,8 +542,13 @@ void Foam::fvDVM::updateMacroSurf()
 
     //- heat flux at wall is specially defined. as it ignores the velocity and temperature slip
     //- NOTE: To be changed as it is part macro, but it will not affect the innner fields, so we change it later
+#if FOAM_MAJOR <= 3
     GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = rhoVol_.boundaryField();
+#else
+    GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+        rhoBCs = rhoVol_.BOUNDARY_FIELD_REF;
+#endif
     qWall_ = dimensionedVector("0", qWall_.dimensions(), vector(0, 0, 0));
     stressWall_ = dimensionedTensor
         (
@@ -528,11 +560,11 @@ void Foam::fvDVM::updateMacroSurf()
     {
         if (rhoBCs[patchi].type() == "calculatedMaxwell")
         {
-            fvPatchField<vector>& qPatch = qWall_.boundaryField()[patchi];
-            fvPatchField<vector>& Upatch = Uvol_.boundaryField()[patchi];
-            fvPatchField<tensor>& stressPatch = stressWall_.boundaryField()[patchi];
+            fvPatchField<vector>& qPatch = qWall_.BOUNDARY_FIELD_REF[patchi];
+            fvPatchField<vector>& Upatch = Uvol_.BOUNDARY_FIELD_REF[patchi];
+            fvPatchField<tensor>& stressPatch = stressWall_.BOUNDARY_FIELD_REF[patchi];
             //- tau at surface use the tau at slip temperature as it is.
-            fvsPatchField<scalar>&  tauPatch = tauSurf_.boundaryField()[patchi];
+            fvsPatchField<scalar>&  tauPatch = tauSurf_.BOUNDARY_FIELD_REF[patchi];
             forAll(qPatch, facei)
             {
                 forAll(DV_, dvi)
@@ -712,8 +744,13 @@ void Foam::fvDVM::updatePressureInOutBC()
 {
     // for pressureIn and pressureOut BC, the boundary value of Uvol(in/out) and Tvol(in/out) should be updated here!
     // boundary faces
+#if FOAM_MAJOR <= 3
     GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = rhoVol_.boundaryField();
+#else
+    GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+        rhoBCs = rhoVol_.BOUNDARY_FIELD_REF;
+#endif
     forAll(rhoBCs, patchi)
     {
         if (rhoBCs[patchi].type() == "pressureIn")
@@ -722,7 +759,7 @@ void Foam::fvDVM::updatePressureInOutBC()
             const fvsPatchField<scalar>& magSfPatch = mesh_.magSf().boundaryField()[patchi];
             pressureInFvPatchField<scalar>& rhoPatch = 
                 refCast<pressureInFvPatchField<scalar> >(rhoBCs[patchi]);
-            fvPatchField<vector>& Upatch = Uvol_.boundaryField()[patchi];
+            fvPatchField<vector>& Upatch = Uvol_.BOUNDARY_FIELD_REF[patchi];
             const fvPatchField<scalar>& Tpatch = Tvol_.boundaryField()[patchi];
             const scalar pressureIn = rhoPatch.pressureIn();
             // now changed rho and U patch
@@ -753,8 +790,8 @@ void Foam::fvDVM::updatePressureInOutBC()
             const fvsPatchField<scalar>& magSfPatch = mesh_.magSf().boundaryField()[patchi];
             pressureOutFvPatchField<scalar>& rhoPatch = 
                 refCast<pressureOutFvPatchField<scalar> >(rhoBCs[patchi]);
-            fvPatchField<vector>& Upatch = Uvol_.boundaryField()[patchi];
-            fvPatchField<scalar>& Tpatch = Tvol_.boundaryField()[patchi];
+            fvPatchField<vector>& Upatch = Uvol_.BOUNDARY_FIELD_REF[patchi];
+            fvPatchField<scalar>& Tpatch = Tvol_.BOUNDARY_FIELD_REF[patchi];
             const scalar pressureOut = rhoPatch.pressureOut();
             // now changed rho and U patch
             const labelUList& pOwner = mesh_.boundary()[patchi].faceCells();
@@ -805,7 +842,7 @@ Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
           dimensionedScalar( "0", dimTime, 0)
          )
         );
-    GeometricField<scalar, PatchType, GeoMesh>& tau = tTau();
+    GeometricField<scalar, PatchType, GeoMesh> tau = tTau();
     tau = muRef_*exp(omega_*log(T/Tref_))/rho/T/R_;
     return tTau;
 }

@@ -23,17 +23,24 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "foam_defs.h"
 #include "fvMesh.H"
 #include "zeroBoundaryGrad.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+#if FOAM_MAJOR <= 2
 namespace Foam
 {
 namespace fv
 {
+#endif
+
     makeFvGradScheme(zeroBoundaryGrad)
+
+#if FOAM_MAJOR <= 2
 }
 }
+#endif
 
 // ************************************************************************* //

@@ -23,6 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "foam_defs.h"
 #include "fvDVM.H"
 #include <map>
 #include "discreteVelocity.H"
@@ -38,6 +39,12 @@ using namespace Foam::constant::mathematical;
 
 //const Foam::word
 //Foam::radiation::radiativeIntensityRay::intensityPrefix("ILambda");
+
+#if FOAM_MAJOR <= 3
+    #define BOUNDARY_FIELD_REF boundaryField()
+#else
+    #define BOUNDARY_FIELD_REF boundaryFieldRef()
+#endif
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -255,8 +262,13 @@ void Foam::discreteVelocity::setBCtype()
     //
     // NOTE: farField for rho BC is not currently used
 
+#if FOAM_MAJOR <= 3
     const GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
         rhoBCs = dvm_.rhoVol().boundaryField();
+#else
+    const GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+        rhoBCs = dvm_.rhoVol().BOUNDARY_FIELD_REF;
+#endif
 
     // bondary condition type map from rho BC to g/hSuf BC
     std::map<word, word> bcMap;
@@ -277,7 +289,7 @@ void Foam::discreteVelocity::setBCtype()
         word rhoBCtype = rhoBCs[patchi].type();
         if( bcMap.find(rhoBCtype) != bcMap.end() ) // found
         {
-            gSurf_.boundaryField().set
+            gSurf_.BOUNDARY_FIELD_REF.set
             (
                 patchi, 
                 fvsPatchField<scalar>::New
@@ -285,7 +297,7 @@ void Foam::discreteVelocity::setBCtype()
                     bcMap[rhoBCtype], mesh_.boundary()[patchi], gSurf_
                 )
             );
-            hSurf_.boundaryField().set
+            hSurf_.BOUNDARY_FIELD_REF.set
             (
                 patchi, 
                 fvsPatchField<scalar>::New
@@ -303,10 +315,17 @@ void Foam::discreteVelocity::initBoundaryField()
     // Here we only consider g but not h, since the eq of h is zero, which is 
     // the default value of mixedFvsPatchField
     // Bug: h is not zero
+#if FOAM_MAJOR <= 3
     GeometricField<scalar, fvsPatchField, surfaceMesh>::GeometricBoundaryField& 
         gBCs = gSurf_.boundaryField();
     GeometricField<scalar, fvsPatchField, surfaceMesh>::GeometricBoundaryField& 
         hBCs = hSurf_.boundaryField();
+#else
+    GeometricField<scalar, fvsPatchField, surfaceMesh>::Boundary& 
+        gBCs = gSurf_.BOUNDARY_FIELD_REF;
+    GeometricField<scalar, fvsPatchField, surfaceMesh>::Boundary& 
+        hBCs = hSurf_.BOUNDARY_FIELD_REF;
+#endif
 
     forAll(gBCs, patchi)
     {
@@ -316,9 +335,9 @@ void Foam::discreteVelocity::initBoundaryField()
             (
                 gBCs[patchi],
                 hBCs[patchi],
-                dvm_.rhoVol().boundaryField()[patchi],
-                dvm_.Uvol().boundaryField()[patchi],
-                dvm_.Tvol().boundaryField()[patchi]
+                dvm_.rhoVol().BOUNDARY_FIELD_REF[patchi],
+                dvm_.Uvol().BOUNDARY_FIELD_REF[patchi],
+                dvm_.Tvol().BOUNDARY_FIELD_REF[patchi]
             );
         }
     }
@@ -414,7 +433,7 @@ void Foam::discreteVelocity::updateGHbarSurf()
     //    hBarPvol_ ...
     //    NOTE: we need the surfaceNormal Gradient
 
-    forAll(gBarPgrad_.boundaryField(), patchi)
+    forAll(gBarPgrad_.BOUNDARY_FIELD_REF, patchi)
     {
         const vectorField n
         (
@@ -423,29 +442,29 @@ void Foam::discreteVelocity::updateGHbarSurf()
         );
 
         if ( 
-               gBarPvol_.boundaryField()[patchi].type() != "empty" 
-            && gBarPvol_.boundaryField()[patchi].type() != "processor"
-            && gBarPvol_.boundaryField()[patchi].type() != "symmetryPlane"
-            && gBarPvol_.boundaryField()[patchi].type() != "DVMsymmetry"
-            && gBarPvol_.boundaryField()[patchi].type() != "cyclic"
-            && gBarPvol_.boundaryField()[patchi].type() != "processorCyclic"
+               gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "empty" 
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "processor"
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "symmetryPlane"
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "DVMsymmetry"
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "cyclic"
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "processorCyclic"
            ) // only for fixed gradient g/hBarPvol
         {
             // normal component of the grad field
             fixedGradientFvPatchField<scalar>& gBarPvolPatch = 
                 refCast<fixedGradientFvPatchField<scalar> >
-                (gBarPvol_.boundaryField()[patchi]);
+                (gBarPvol_.BOUNDARY_FIELD_REF[patchi]);
 
             fixedGradientFvPatchField<scalar>& hBarPvolPatch = 
                 refCast<fixedGradientFvPatchField<scalar> >
-                (hBarPvol_.boundaryField()[patchi]);
+                (hBarPvol_.BOUNDARY_FIELD_REF[patchi]);
 
             forAll(gBarPvolPatch, pFacei)
             {
                 gBarPvolPatch.gradient()[pFacei] =
-                    gBarPgrad_.boundaryField()[patchi][pFacei]&n[pFacei];
+                    gBarPgrad_.BOUNDARY_FIELD_REF[patchi][pFacei]&n[pFacei];
                 hBarPvolPatch.gradient()[pFacei] =
-                    hBarPgrad_.boundaryField()[patchi][pFacei]&n[pFacei];
+                    hBarPgrad_.BOUNDARY_FIELD_REF[patchi][pFacei]&n[pFacei];
             }
         }
     }
@@ -511,11 +530,11 @@ void Foam::discreteVelocity::updateGHbarSurf()
     }
 
   // boundary faces
-    forAll(gSurf_.boundaryField(), patchi)
+    forAll(gSurf_.BOUNDARY_FIELD_REF, patchi)
     {
-        word type = gSurf_.boundaryField()[patchi].type();
-        fvsPatchField<scalar>& gSurfPatch = gSurf_.boundaryField()[patchi];
-        fvsPatchField<scalar>& hSurfPatch = hSurf_.boundaryField()[patchi];
+        word type = gSurf_.BOUNDARY_FIELD_REF[patchi].type();
+        fvsPatchField<scalar>& gSurfPatch = gSurf_.BOUNDARY_FIELD_REF[patchi];
+        fvsPatchField<scalar>& hSurfPatch = hSurf_.BOUNDARY_FIELD_REF[patchi];
         const fvsPatchField<vector>& SfPatch =
             mesh_.Sf().boundaryField()[patchi];
         const fvsPatchField<vector>& CfPatch =
@@ -531,8 +550,8 @@ void Foam::discreteVelocity::updateGHbarSurf()
         //- NOTE: outging DF can be treate unifily for all BCs, including processor BC
         if (type == "zeroGradient")
         {
-            gSurfPatch == gBarPvol_.boundaryField()[patchi].patchInternalField();
-            hSurfPatch == hBarPvol_.boundaryField()[patchi].patchInternalField();
+            gSurfPatch == gBarPvol_.BOUNDARY_FIELD_REF[patchi].patchInternalField();
+            hSurfPatch == hBarPvol_.BOUNDARY_FIELD_REF[patchi].patchInternalField();
         }
         else if (type == "mixed")
         {
@@ -587,7 +606,7 @@ void Foam::discreteVelocity::updateGHbarSurf()
         {
             calculatedMaxwellFvPatchField<scalar>& rhoPatch = 
                 refCast<calculatedMaxwellFvPatchField<scalar> >
-                (dvm_.rhoVol().boundaryField()[patchi]); //DEBUG
+                (dvm_.rhoVol().BOUNDARY_FIELD_REF[patchi]); //DEBUG
 
             forAll(gSurfPatch, facei)
             {
@@ -625,11 +644,11 @@ void Foam::discreteVelocity::updateGHbarSurf()
                 } 
                 else if ((xii&faceSf) <  -VSMALL )//incomming from processor boundaryField
                 {
-                    gSurfPatch[facei] = gBarPvol_.boundaryField()[patchi][facei]
-                      + ((gBarPgrad_.boundaryField()[patchi][facei])
+                    gSurfPatch[facei] = gBarPvol_.BOUNDARY_FIELD_REF[patchi][facei]
+                      + ((gBarPgrad_.BOUNDARY_FIELD_REF[patchi][facei])
                        &(CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt));
-                    hSurfPatch[facei] = hBarPvol_.boundaryField()[patchi][facei]
-                      + ((hBarPgrad_.boundaryField()[patchi][facei])
+                    hSurfPatch[facei] = hBarPvol_.BOUNDARY_FIELD_REF[patchi][facei]
+                      + ((hBarPgrad_.BOUNDARY_FIELD_REF[patchi][facei])
                        &(CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt));
                 }
                 else 
@@ -637,14 +656,14 @@ void Foam::discreteVelocity::updateGHbarSurf()
                     gSurfPatch[facei] = 0.5*(
                             iGbarPvol[faceCells[facei]] + 
                             (   (iGbarPgrad[faceCells[facei]]) & (CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt) )
-                            + gBarPvol_.boundaryField()[patchi][facei] + 
-                            (   (gBarPgrad_.boundaryField()[patchi][facei]) & (CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt) )
+                            + gBarPvol_.BOUNDARY_FIELD_REF[patchi][facei] + 
+                            (   (gBarPgrad_.BOUNDARY_FIELD_REF[patchi][facei]) & (CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt) )
                     );
                     hSurfPatch[facei] = 0.5*(
                             iHbarPvol[faceCells[facei]] + 
                             (   (iHbarPgrad[faceCells[facei]]) & (CfPatch[facei] - C[faceCells[facei]] - 0.5*xii*dt) )
-                            + hBarPvol_.boundaryField()[patchi][facei] + 
-                            (   (hBarPgrad_.boundaryField()[patchi][facei]) & (CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt) )
+                            + hBarPvol_.BOUNDARY_FIELD_REF[patchi][facei] + 
+                            (   (hBarPgrad_.BOUNDARY_FIELD_REF[patchi][facei]) & (CfPatch[facei] - mesh_.C().boundaryField()[patchi][facei] - 0.5*xii*dt) )
                     );
 
                 }
@@ -674,18 +693,18 @@ void Foam::discreteVelocity::updateGHbarSurf()
 void Foam::discreteVelocity::updateGHbarSurfMaxwellWallIn()
 {
     vector xii = xi_.value();
-    forAll(gSurf_.boundaryField(), patchi)
+    forAll(gSurf_.BOUNDARY_FIELD_REF, patchi)
     {
-        if (gSurf_.boundaryField()[patchi].type() == "maxwellWall")
+        if (gSurf_.BOUNDARY_FIELD_REF[patchi].type() == "maxwellWall")
         {
-            fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
-            fvsPatchScalarField& hSurfPatch = hSurf_.boundaryField()[patchi];
+            fvsPatchScalarField& gSurfPatch = gSurf_.BOUNDARY_FIELD_REF[patchi];
+            fvsPatchScalarField& hSurfPatch = hSurf_.BOUNDARY_FIELD_REF[patchi];
             const fvPatchScalarField& rhoVolPatch = 
-                dvm_.rhoVol().boundaryField()[patchi];
+                dvm_.rhoVol().BOUNDARY_FIELD_REF[patchi];
             const fvPatchVectorField& UvolPatch = 
-                dvm_.Uvol().boundaryField()[patchi];
+                dvm_.Uvol().BOUNDARY_FIELD_REF[patchi];
             const fvPatchScalarField& TvolPatch = 
-                dvm_.Tvol().boundaryField()[patchi];
+                dvm_.Tvol().BOUNDARY_FIELD_REF[patchi];
             const fvsPatchVectorField& SfPatch = 
                 mesh_.Sf().boundaryField()[patchi];
             forAll(gSurfPatch, facei)
@@ -722,16 +741,21 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
     label chunck = dvm_.nXi()/nproc;
     label left   = dvm_.nXi()%nproc;
 
-    forAll(gSurf_.boundaryField(), patchi)
+    forAll(gSurf_.BOUNDARY_FIELD_REF, patchi)
     {
-        if (gSurf_.boundaryField()[patchi].type() == "DVMsymmetry" 
-        &&  gSurf_.boundaryField()[patchi].size() > 0 )
+        if (gSurf_.BOUNDARY_FIELD_REF[patchi].type() == "DVMsymmetry" 
+        &&  gSurf_.BOUNDARY_FIELD_REF[patchi].size() > 0 )
         {
-            fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
-            fvsPatchScalarField& hSurfPatch = hSurf_.boundaryField()[patchi];
+            fvsPatchScalarField& gSurfPatch = gSurf_.BOUNDARY_FIELD_REF[patchi];
+            fvsPatchScalarField& hSurfPatch = hSurf_.BOUNDARY_FIELD_REF[patchi];
             
+#if FOAM_MAJOR <= 3
             GeometricField<scalar, fvPatchField, volMesh>::GeometricBoundaryField& 
                 rhoBCs = dvm_.rhoVol().boundaryField();
+#else
+            GeometricField<scalar, fvPatchField, volMesh>::Boundary& 
+                rhoBCs = dvm_.rhoVol().BOUNDARY_FIELD_REF;
+#endif
 
             symmetryModFvPatchField<scalar>& rhoPatch = 
                 refCast<symmetryModFvPatchField<scalar> >(rhoBCs[patchi]);
@@ -831,9 +855,9 @@ void Foam::discreteVelocity::updateGHsurf()
     );
 
     //DEBUG
-    //forAll(gSurf_.boundaryField(), patchi)
+    //forAll(gSurf_.BOUNDARY_FIELD_REF, patchi)
     //{
-        //fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
+        //fvsPatchScalarField& gSurfPatch = gSurf_.BOUNDARY_FIELD_REF[patchi];
         //if(gSurfPatch.type() == "DVMsymmetry")
         //{
             //if(dvm_.mpiReducer().rank() == 42 && myDVid_ == 96)
@@ -850,17 +874,17 @@ void Foam::discreteVelocity::updateGHsurf()
 
     vector xii = xi_.value();
     // We do it mannuly for the outgoing DF!
-    forAll(gSurf_.boundaryField(), patchi)
+    forAll(gSurf_.BOUNDARY_FIELD_REF, patchi)
     {
-        fvsPatchScalarField& gSurfPatch = gSurf_.boundaryField()[patchi];
-        fvsPatchScalarField& hSurfPatch = hSurf_.boundaryField()[patchi];
-        fvsPatchScalarField& gEqPatch   =    gEq.boundaryField()[patchi];
-        fvsPatchScalarField& hEqPatch   =    hEq.boundaryField()[patchi];
+        fvsPatchScalarField& gSurfPatch = gSurf_.BOUNDARY_FIELD_REF[patchi];
+        fvsPatchScalarField& hSurfPatch = hSurf_.BOUNDARY_FIELD_REF[patchi];
+        fvsPatchScalarField& gEqPatch   =    gEq.BOUNDARY_FIELD_REF[patchi];
+        fvsPatchScalarField& hEqPatch   =    hEq.BOUNDARY_FIELD_REF[patchi];
 
         const fvsPatchVectorField& SfPatch = mesh_.Sf().boundaryField()[patchi];
 
         fvsPatchScalarField& relaxFactorPatch = 
-            relaxFactor.boundaryField()[patchi];
+            relaxFactor.BOUNDARY_FIELD_REF[patchi];
 
         //NOTE:  If keep the below block, for the Sod problem, -parallel running would be different from serial run.
         //       I also doubt that for cyclic boundary, the same problem will happen.
@@ -872,10 +896,10 @@ void Foam::discreteVelocity::updateGHsurf()
         forAll(gSurfPatch, facei)
         {
             if ( (xii&(SfPatch[facei])) > 0    // Here, if delted , the free stream BC may bo s problem
-            && gBarPvol_.boundaryField()[patchi].type() != "processor"
-            && gBarPvol_.boundaryField()[patchi].type() != "processorCyclic"
-            && gBarPvol_.boundaryField()[patchi].type() != "cyclic")
-            //&& gSurf_.boundaryField()[patchi].type() != "DVMsymmetry")
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "processor"
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "processorCyclic"
+            && gBarPvol_.BOUNDARY_FIELD_REF[patchi].type() != "cyclic")
+            //&& gSurf_.BOUNDARY_FIELD_REF[patchi].type() != "DVMsymmetry")
             {
                 gSurfPatch[facei] = (1.0 - relaxFactorPatch[facei])
                     *gSurfPatch[facei]
@@ -923,12 +947,12 @@ void Foam::discreteVelocity::updateGHtildeVol()
     }
 
     // boundary faces
-    forAll(gSurf_.boundaryField(), patchi)
+    forAll(gSurf_.BOUNDARY_FIELD_REF, patchi)
     {
         const fvsPatchField<scalar>& gSurfPatch =
-            gSurf_.boundaryField()[patchi];
+            gSurf_.BOUNDARY_FIELD_REF[patchi];
         const fvsPatchField<scalar>& hSurfPatch =
-            hSurf_.boundaryField()[patchi];
+            hSurf_.BOUNDARY_FIELD_REF[patchi];
         const fvsPatchField<vector>& SfPatch =
             mesh_.Sf().boundaryField()[patchi];
         const labelUList& pOwner = mesh_.boundary()[patchi].faceCells();
