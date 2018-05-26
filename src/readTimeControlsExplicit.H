@@ -46,7 +46,7 @@ scalar maxDeltaT =
     runTime.controlDict().lookupOrDefault<scalar>("maxDeltaT", GREAT);
 
 scalar convergeTol =
-    runTime.controlDict().lookupOrDefault<scalar>("convergeTol", 1.0e-12);
+    runTime.controlDict().lookupOrDefault<scalar>("convergeTol", 1.0e-9);
 
 label convergeCheckSteps =
     runTime.controlDict().lookupOrDefault("convergeCheckSteps", 1);

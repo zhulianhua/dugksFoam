@@ -54,7 +54,8 @@ int main(int argc, char *argv[])
         Info<< "\nStarting time loop\n" << endl;
 
     label It = 0;
-    while (runTime.run() && (TemperatureChange > convergeTol))
+    //while (runTime.run() && (TemperatureChange > convergeTol))
+    while (runTime.run() && (Uchange > convergeTol))
     {
         #include "CourantNo.H" // calculate the Co num
         #include "readTimeControlsExplicit.H"

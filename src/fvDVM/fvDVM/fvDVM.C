@@ -81,25 +81,25 @@ void Foam::fvDVM::setDVgrid
     );
 
     // Check
-    if (
-            xiList.size() != nXi 
-         || weightList.size() != nXi
-       )
-    {
-        WarningIn("setDVgrid")
-            << "Num of discreteVelocity not consistent" << endl;
-        std::exit(-1);
-    }
+    //if (
+            //xiList.size() != nXi 
+         //|| weightList.size() != nXi
+       //)
+    //{
+        //WarningIn("setDVgrid")
+            //<< "Num of discreteVelocity not consistent" << endl;
+        //std::exit(-1);
+    //}
 
 
-    if ( 
-           xiList[0]  != xiMin
-        || xiList[nXi-1] != xiMax)
-    {
-        WarningIn("setDVgrid")
-            << "xi not consistant" <<endl;
-        std::exit(-1);
-    }
+    //if ( 
+           //xiList[0]  != xiMin
+        //|| xiList[nXi-1] != xiMax)
+    //{
+        //WarningIn("setDVgrid")
+            //<< "xi not consistant" <<endl;
+        //std::exit(-1);
+    //}
 
 
     for (label i = 0; i < nXi ; i++)
