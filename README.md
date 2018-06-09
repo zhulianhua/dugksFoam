@@ -13,26 +13,26 @@ An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinet
 * Various boundary condition types.
 
 ## Installation and documentation
+NOTE: Tested on OpenFOAM 2.4.0, 3.0.0, 3.0.1, 4.0, 4.1 and 5.0 with gcc/Intel compilers.
+
+Thanks to the contribution from @sanguinariojoe, the installation is also simplified:
 ```bash
 of240 # change the version code according your OF installation
 cd dugksFoam/src
 
-# make own copy of wmake so we can override the 'CC' defination to mpicxx to support the velocity space decomposition MPI parallel computing ability.
-# note: this workround may only works at OpenFOAM-2.4.0
+# suggested by @sanguinariojoe
+cp -r $WM_DIR/rules/$WM_ARCH$WM_COMPILER "$WM_DIR/rules/$WM_ARCH"MPI
+export WM_COMPILER=MPI
+sed -i "s/$WM_CXX/mpicxx/" $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++
 
-cp `which wmake` .
-sed -i '316s/makeType/makeType CC=mpicxx/' wmake
 ./Allwmake
 ```
 
-## Test only on the following version of OpenFOAM  and platform
-* OpenFOAM-2.4.0 with intel compilers
-* OpenFOAM-2.4.0 with gnu compilers
-
-See more details in `dugksFoam.pdf` in the `doc` directory, or download it [here](https://github.com/zhulianhua/dugksFoam/raw/master/doc/dugksFoam.pdf).
+NOTE: the installation and usages in the `dugksFoam.pdf` in the `doc` directory is obsolete. The documentation will be rewritten.
 
 ## References
-* [1] Z.L. Guo, K. Xu, R.J. Wang, Discrete unified gas kinetic scheme for all Knudsen number flows: low-speed isothermal case, [Phys. Rev. E, 88 (2013) 033305](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.88.033305).
-* [2] Z.L. Guo, R.J. Wang, K. Xu, Discrete unified gas kinetic scheme for all Knudsen number flows. II. Thermal compressible case, [Phys. Rev. E, 91(2015) 033313.](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.91.033313)
-* [3] L.H. Zhu, Z.L. Guo, K. Xu, Discrete unified gas kinetic scheme on unstructured meshes, [Comp. Fluids, 127(2016) 211-225](http://www.sciencedirect.com/science/article/pii/S0045793016000177)
-* [4] L.H. Zhu, S.Z. Chen, Z.L. Guo, dugksFoam: An open source OpenFOAM solver for the Boltzmann model equation, [Comp. Phys. Commun., 213(2017) 155-164](http://www.sciencedirect.com/science/article/pii/S0010465516303642)
+* [1] Z. Guo, K. Xu, R. Wang, Discrete unified gas kinetic scheme for all Knudsen number flows: low-speed isothermal case, [Phys. Rev. E, 88 (2013) 033305](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.88.033305).
+* [2] Z. Guo, R. Wang, K. Xu, Discrete unified gas kinetic scheme for all Knudsen number flows. II. Thermal compressible case, [Phys. Rev. E, 91(2015) 033313.](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.91.033313)
+* [3] L. Zhu, Z. Guo, K. Xu, Discrete unified gas kinetic scheme on unstructured meshes, [Comp. Fluids, 127(2016) 211-225](http://www.sciencedirect.com/science/article/pii/S0045793016000177)
+* [4] L. Zhu, S. Chen, Z. Guo, dugksFoam: An open source OpenFOAM solver for the Boltzmann model equation, [Comp. Phys. Commun., 213(2017) 155-164](http://www.sciencedirect.com/science/article/pii/S0010465516303642)
+* [5] L. Zhu, Z. Guo, Numerical study of nonequilibrium gas flow in a microchannel with a ratchet surface, [Phys. Rev. E. 95, (2017), 023113](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.95.023113)
