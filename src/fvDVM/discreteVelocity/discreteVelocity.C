@@ -781,8 +781,6 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
                 label p  = targetDVid%nproc; //locate in p's
                 label pi = targetDVid/nproc;
                 
-                //if(rank == 42 && myDVid_ == 96)
-                    //Info << "tp = " << p << " tpi= " << pi << endl;
                 label shift = displ[p] + pi*ps*2;
                 memcpy( gSurfPatch.data(),
                         rhoPatch.dfContainer().data() + shift,      ps*sizeof(scalar) );
@@ -853,20 +851,6 @@ void Foam::discreteVelocity::updateGHsurf()
         dvm_.Tsurf(), 
         dvm_.qSurf() 
     );
-
-    //DEBUG
-    //forAll(gSurf_.BOUNDARY_FIELD_REF, patchi)
-    //{
-        //fvsPatchScalarField& gSurfPatch = gSurf_.BOUNDARY_FIELD_REF[patchi];
-        //if(gSurfPatch.type() == "DVMsymmetry")
-        //{
-            //if(dvm_.mpiReducer().rank() == 42 && myDVid_ == 96)
-                //Info << "Before updata gSurf inComming   =" << gSurfPatch[24] << endl;
-            //if(dvm_.mpiReducer().rank() == 62 && myDVid_ == 96)
-                ////Info << "After update cell tilde, outGoing  = " <<gTildeVol_[135]<< endl;
-                //Info << "Before updata gSurf outGoing    =" << gSurfPatch[24] << endl;
-        //}
-    //}
 
     gSurf_ = (1.0 - relaxFactor)*gSurf_ + relaxFactor*gEq;
     hSurf_ = (1.0 - relaxFactor)*hSurf_ + relaxFactor*hEq;
