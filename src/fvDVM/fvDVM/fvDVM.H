@@ -359,11 +359,10 @@ class fvDVM
 
         inline label KInner() const;
 
-        //- aux. update tau from new T at vol/surf, call by updateMacroXxx
-        template<template<class> class PatchType, class GeoMesh> 
-        tmp<GeometricField<scalar, PatchType, GeoMesh> >
-        updateTau
+        template<template<class> class PatchType, class GeoMesh>
+        void updateTau
         (
+            GeometricField<scalar, PatchType, GeoMesh>& tau,
             const GeometricField<scalar, PatchType, GeoMesh>& T, 
             const GeometricField<scalar, PatchType, GeoMesh>& rho
         );

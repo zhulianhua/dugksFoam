@@ -507,7 +507,7 @@ void Foam::fvDVM::updateMacroSurf()
 
     Tsurf_ = (rhoEsurf - 0.5*rhoSurf_*magSqr(Usurf_))/((KInner_ + 3)/2.0*R_*rhoSurf_);
 
-    tauSurf_ = updateTau(Tsurf_, rhoSurf_);
+    updateTau(tauSurf_, Tsurf_, rhoSurf_);
     //- peculiar vel.
 
     surfaceVectorField c = Usurf_;
@@ -717,7 +717,7 @@ void Foam::fvDVM::updateMacroVol()
     //rhoVol_.correctBoundaryConditions(); 
 
     //- update tau
-    tauVol_ = updateTau(Tvol_, rhoVol_);
+    updateTau(tauVol_, Tvol_, rhoVol_);
     //- peculiar vel.
     volVectorField c = Uvol_;
 
@@ -818,33 +818,15 @@ void Foam::fvDVM::updatePressureInOutBC()
     }
 }
 
-template<template<class> class PatchType, class GeoMesh> 
-Foam::tmp<Foam::GeometricField<scalar, PatchType, GeoMesh> >
-    Foam::fvDVM::updateTau
+template<template<class> class PatchType, class GeoMesh>
+void Foam::fvDVM::updateTau
 (
+ GeometricField<scalar, PatchType, GeoMesh>& tau,
  const GeometricField<scalar, PatchType, GeoMesh>& T, 
  const GeometricField<scalar, PatchType, GeoMesh>& rho
  )
 {
-    tmp<GeometricField<scalar, PatchType, GeoMesh> > tTau
-        (
-         new GeometricField<scalar, PatchType, GeoMesh>
-         (
-          IOobject
-          (
-           "tau",
-           mesh_.time().timeName(),
-           mesh_,
-           IOobject::NO_READ,
-           IOobject::NO_WRITE
-          ),
-          mesh_,
-          dimensionedScalar( "0", dimTime, 0)
-         )
-        );
-    GeometricField<scalar, PatchType, GeoMesh> tau = tTau();
     tau = muRef_*exp(omega_*log(T/Tref_))/rho/T/R_;
-    return tTau;
 }
 
 
@@ -1094,7 +1076,7 @@ void Foam::fvDVM::writeDF(label cellId)
     setSymmetryModRhoBC();
     // set initial rho in pressureIn/Out BC
     updatePressureInOutBC();
-    tauVol_ = updateTau(Tvol_, rhoVol_); //calculate the tau at cell when init
+    updateTau(tauVol_, Tvol_, rhoVol_); //calculate the tau at cell when init
     Usurf_ = fvc::interpolate(Uvol_, "linear"); // for first time Dt calculation.
 }
 
