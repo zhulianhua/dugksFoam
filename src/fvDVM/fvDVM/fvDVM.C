@@ -68,7 +68,7 @@ void Foam::fvDVM::setDVgrid
         IOobject
         (
              "Xis",
-             time_.time().constant(),
+             time_.caseConstant(),
              mesh_,
              IOobject::MUST_READ,
              IOobject::NO_WRITE
@@ -80,7 +80,7 @@ void Foam::fvDVM::setDVgrid
         IOobject
         (
              "weights",
-             time_.time().constant(),
+             time_.caseConstant(),
              mesh_,
              IOobject::MUST_READ,
              IOobject::NO_WRITE

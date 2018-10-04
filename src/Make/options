@@ -1,4 +1,9 @@
+sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
+sinclude $(RULES)/mplib$(WM_MPLIB)
+
 EXE_INC = \
+    -Wno-unused-variable -Wno-old-style-cast \
+    $(PFLAGS) $(PINC) \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/OpenFOAM/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
@@ -6,6 +11,7 @@ EXE_INC = \
     -I../inc/FoamDefs/$(WM_PROJECT_VERSION)
 
 EXE_LIBS = \
+    $(PLIBS) \
     -L$(FOAM_USER_LIBBIN) \
     -lfiniteVolume \
     -ldugksFoam \

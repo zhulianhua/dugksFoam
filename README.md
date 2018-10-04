@@ -1,7 +1,9 @@
 # dugksFoam
-An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinetic scheme [1,2,3].
+
+An OpenFOAM solver for the Boltzmann model equations using discrete unified gas kinetic scheme [1,2,3].
 
 ## Key features
+
 * Solving discrete velocity Boltzmann equation;
 * Based on Shakhov-BGK collision model;
 * Using discrete unified gas kinetic scheme (Asymptotic preserving property);
@@ -13,18 +15,19 @@ An OpenFOAM solver for Boltzmann model equation using discrete unified gas kinet
 * Various boundary condition types.
 
 ## Installation and documentation
-NOTE: Tested on OpenFOAM 2.4.0, 3.0.0, 3.0.1, 4.0, 4.1 and 5.0 with gcc/Intel compilers.
 
-Thanks to the contribution from @sanguinariojoe, the installation is also simplified:
+**NOTE**: Tested on the following OpenFOAM versions :
+
+* 2.4.0, gcc/intel
+* 3.0.0, gcc
+* 3.0.1, gcc
+* 4.0,   gcc
+* 4.1    gcc/intel
+* 6.0,   gcc
+
 ```bash
 of240 # change the version code according your OF installation
 cd dugksFoam/src
-
-# suggested by @sanguinariojoe
-cp -r $WM_DIR/rules/$WM_ARCH$WM_COMPILER "$WM_DIR/rules/$WM_ARCH"MPI
-export WM_COMPILER=MPI
-sed -i "s/$WM_CXX/mpicxx/" $WM_DIR/rules/$WM_ARCH$WM_COMPILER/c++
-
 ./Allwmake
 ```
 
