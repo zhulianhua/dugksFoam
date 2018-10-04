@@ -31,7 +31,7 @@ cd dugksFoam/src
 ./Allwmake
 ```
 
-NOTE: the installation and usages in the `dugksFoam.pdf` in the `doc` directory is obsolete. The documentation will be rewritten.
+See documentation at `doc/dugksFoam.pdf`.
 
 ## References
 * [1] Z. Guo, K. Xu, R. Wang, Discrete unified gas kinetic scheme for all Knudsen number flows: low-speed isothermal case, [Phys. Rev. E, 88 (2013) 033305](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.88.033305).
