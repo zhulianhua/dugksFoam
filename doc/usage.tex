@@ -80,6 +80,8 @@ Currently, the dugksFoam supports only symmetry boundaries aligned in the X/Y/Z 
 To specify a symmetric boundary, set the corresponding boundary patch type as \verb|symmetryPlane| in all of the three initial fields, i.e., \verb|0/rho|, \verb|0/U|, \verb|0/T|.
 Note that you should also change the basic boundary patch type in \verb|constant/polyMesh/boundary| to \verb|symmetryPlane|.
 
+If using velocity space decomposing parallelization, the symmetric boundary on \verb|rho| shoud be \verb|symmetryMod|, and the boundary path should be  \verb|wall|.
+
 \subsubsection{Far field boundary}
 This boundary type is exclusively used for the outer boundary in the simulation of supersonic extern flows past objects.
 The physical interpretation is that the particles comes into the computational domain with the far field equilibrium velocity distribution.
