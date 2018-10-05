@@ -7,9 +7,13 @@ HEADERFOLDER=../inc/FoamDefs/$WM_PROJECT_VERSION
 mkdir -p $HEADERFOLDER
 HEADERPATH=$HEADERFOLDER/foam_defs.h
 IFS='.' read -ra FOAM_VERSION <<< "$WM_PROJECT_VERSION"
-touch $HEADERPATH
-echo "#define FOAM_MAJOR ${FOAM_VERSION[0]}" > $HEADERPATH
-echo "#define FOAM_MINOR ${FOAM_VERSION[1]}" >> $HEADERPATH
+
+if [ ! -f $HEADERPATH  ]
+then
+    touch $HEADERPATH
+    echo "#define FOAM_MAJOR ${FOAM_VERSION[0]}" > $HEADERPATH
+    echo "#define FOAM_MINOR ${FOAM_VERSION[1]}" >> $HEADERPATH
+fi
 
 (wmake libso fvDVM && wmake)
 

@@ -72,7 +72,7 @@ pressureInFvPatchField<Type>::pressureInFvPatchField
     pressureIn_(dict.lookupOrDefault<scalar>("pressureIn", -VGREAT))
 {
     //evaluate();
-    Field<Type>::operator=(pTraits<Type>::zero);
+    Field<Type>::operator=(pTraits<Type>::one);
 }
 
 

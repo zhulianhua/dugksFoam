@@ -72,7 +72,7 @@ pressureOutFvPatchField<Type>::pressureOutFvPatchField
     pressureOut_(dict.lookupOrDefault<scalar>("pressureOut", -VGREAT))
 {
     //evaluate();
-    Field<Type>::operator=(pTraits<Type>::zero);
+    Field<Type>::operator=(pTraits<Type>::one);
 }
 
 
