@@ -6,6 +6,8 @@ gnuplot <<- EOF
     set xlabel "t"
     set ylabel "log(Error)"
     set logscale y
+    #set format y "%s*10^{%S}"
+    set format y "%.2e"
     set term png
     set output "log.png"
     plot "tlog.dat" using 1:2 with l title "rho Convergence rate", \
