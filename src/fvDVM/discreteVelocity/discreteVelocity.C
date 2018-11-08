@@ -788,6 +788,31 @@ void Foam::discreteVelocity::updateGHbarSurfSymmetryIn()
                         rhoPatch.dfContainer().data() + shift+ps,   ps*sizeof(scalar) );
             }
         }
+        else if (gSurf_.BOUNDARY_FIELD_REF[patchi].type() == "symmetryPlane" 
+        &&  gSurf_.BOUNDARY_FIELD_REF[patchi].size() > 0 )
+        {
+            fvsPatchScalarField& gSurfPatch = gSurf_.BOUNDARY_FIELD_REF[patchi];
+            fvsPatchScalarField& hSurfPatch = hSurf_.BOUNDARY_FIELD_REF[patchi];
+
+#if FOAM_MAJOR <= 3
+            const vector faceSf = mesh_.Sf().boundaryField()[patchi][0];
+#else
+            const vector faceSf = mesh_.Sf().boundaryField()[patchi][0];
+#endif
+            if ((xii & faceSf) <= 0) // incomming
+            {
+                vector nomlizedDirec = faceSf/mag(faceSf);
+                label targetDVid = abs(round(nomlizedDirec
+                    & vector(symXtargetDVid_, symYtargetDVid_, symZtargetDVid_)));
+                forAll(gSurfPatch, facei)
+                {
+                    gSurfPatch[facei] = dvm_.DVi(targetDVid).gSurf().boundaryField()
+                        [patchi][facei];
+                    hSurfPatch[facei] = dvm_.DVi(targetDVid).hSurf().boundaryField()
+                        [patchi][facei];
+                }
+            }
+        } 
     } 
 }
 
