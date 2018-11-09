@@ -7,3 +7,4 @@ src/Make/linux**
 src/fvDVM/lnInclude/
 src/fvDVM/Make/linux**
 src/wmake
+.vscode

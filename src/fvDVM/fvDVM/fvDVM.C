@@ -466,20 +466,7 @@ void Foam::fvDVM::updateMacroSurf()
             stressSurf_.dimensions(), 
             pTraits<tensor>::zero
         );
-    //if(Pstream::parRun())
-    //{
-        //Pout << "My proc NO " << Pstream::myProcNo() << endl;
-        //if(Pstream::myProcNo() == 1)
-            //Pout << "g[78] at proc 1  interface" <<  DV_[100].gSurf().boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary1to0")][0] << endl;
-        //if(Pstream::myProcNo() == 0)
-            //Pout << "g[78] at proc 0  interface" <<  DV_[100].gSurf().boundaryField()[mesh_.boundaryMesh().findPatchID("procBoundary0to1")][0] << endl;
-    //}else
-    //{
-        //Info << "g[78] at 50 th  interface" <<  DV_[100].gSurf()[49] << endl;
-    //}
 
-    // Conserved variable, now zero as the prime variable 
-    // has been set to zero
     surfaceVectorField rhoUsurf = rhoSurf_*Usurf_;
     surfaceScalarField rhoEsurf = rhoSurf_*magSqr(Usurf_);
 
