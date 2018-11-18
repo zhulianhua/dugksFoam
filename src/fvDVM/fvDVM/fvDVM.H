@@ -137,6 +137,10 @@ class fvDVM
         //- nStep for res
         ////const label checkSteps_;
 
+
+        // id of cells whose DF will be saved at each write time;
+        labelList DFwriteCellList_;
+
         //- Gas: R
         const dimensionedScalar R_;
 
@@ -368,7 +372,8 @@ class fvDVM
         );
 
         //- write DF
-        void writeDF(label cellId);
+        void writeDFonCell(label cellId);
+        void writeDFonCells();
 };
 
 

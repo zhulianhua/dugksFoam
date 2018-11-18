@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
         dvm.evolution();
 
         //write DF
+        dvm.writeDFonCells();
 
         if(dvm.mpiReducer().rank() == 0)
         {

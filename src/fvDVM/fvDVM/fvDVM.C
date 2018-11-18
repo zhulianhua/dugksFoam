@@ -817,7 +817,7 @@ void Foam::fvDVM::updateTau
 }
 
 
-void Foam::fvDVM::writeDF(label cellId)
+void Foam::fvDVM::writeDFonCell(label cellId)
 {
     std::ostringstream convert;
     convert << cellId;
@@ -826,7 +826,7 @@ void Foam::fvDVM::writeDF(label cellId)
         IOobject
         (
              "DF"+convert.str(),
-             time_.time().timeName(),
+             "0",
              mesh_,
              IOobject::NO_READ,
              IOobject::AUTO_WRITE
@@ -874,6 +874,12 @@ void Foam::fvDVM::writeDF(label cellId)
     }
 }
 
+void Foam::fvDVM::writeDFonCells()
+{
+    if (time_.outputTime())
+        forAll(DFwriteCellList_, i)
+            writeDFonCell(i);
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -1058,6 +1064,7 @@ void Foam::fvDVM::writeDF(label cellId)
          dimensionedTensor("0", dimensionSet(1,-1,-2,0,0,0,0), pTraits<tensor>::zero)
         )
 {
+    DFwriteCellList_ = lookupOrDefault<labelList>("DFwriteCellList", labelList()),
     initialiseDV();
     setCalculatedMaxwellRhoBC();
     setSymmetryModRhoBC();
