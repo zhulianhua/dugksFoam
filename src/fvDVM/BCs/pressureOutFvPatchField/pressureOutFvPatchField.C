@@ -145,6 +145,7 @@ void pressureOutFvPatchField<Type>::write(Ostream& os) const
 {
         fvPatchField<Type>::write(os);
         this->writeEntry("value", os);
+        pressureOut_.writeEntry("pressureOut", os);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -51,8 +51,8 @@ scalar convergeTol =
 label convergeCheckSteps =
     runTime.controlDict().lookupOrDefault("convergeCheckSteps", 1);
 
-scalar TemperatureChange = 1.0;
-scalar rhoChange = 1.0;
-scalar Uchange = 1.0;
+//TemperatureChange = 1.0;
+//rhoChange = 1.0;
+//Uchange = 1.0;
 // ************************************************************************* //
 //

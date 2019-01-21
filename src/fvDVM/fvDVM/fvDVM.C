@@ -858,8 +858,8 @@ void Foam::fvDVM::writeDFonCell(label cellId)
         else
             displ[i] = left*(chunck +1) + (i-left)*(chunck);
     }
-    MPI_Gatherv(dfPart.cdata(), dfPart.size(), MPI_DOUBLE,
-            dfRcv.data(), recvc.cdata(), displ.cdata(), 
+    MPI_Gatherv(dfPart.data(), dfPart.size(), MPI_DOUBLE,
+            dfRcv.data(), recvc.data(), displ.data(),
             MPI_DOUBLE, 0, MPI_COMM_WORLD);
     //reposition
     if(mpiReducer_.rank() == 0)

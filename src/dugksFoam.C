@@ -40,6 +40,11 @@ int main(int argc, char *argv[])
     //Add global valid option
     Foam::argList::addBoolOption("dvParallel", "Use discrete velocity domain decomposition\n");
 
+    //convergence monitor
+    scalar TemperatureChange = 1.0;
+    scalar rhoChange = 1.0;
+    scalar Uchange = 1.0;
+
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createMesh.H"
