@@ -145,7 +145,8 @@ void pressureOutFvPatchField<Type>::write(Ostream& os) const
 {
         fvPatchField<Type>::write(os);
         this->writeEntry("value", os);
-        pressureOut_.writeEntry("pressureOut", os);
+        os.writeKeyword("pressureOut")
+            << pressureOut_ << token::END_STATEMENT << nl;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
