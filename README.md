@@ -40,3 +40,4 @@ See documentation at `doc/dugksFoam.pdf`.
 * [4] L. Zhu, S. Chen, Z. Guo, dugksFoam: An open source OpenFOAM solver for the Boltzmann model equation, [Comp. Phys. Commun., 213(2017) 155-164](http://www.sciencedirect.com/science/article/pii/S0010465516303642)
 * [5] L. Zhu, Z. Guo, Numerical study of nonequilibrium gas flow in a microchannel with a ratchet surface, [Phys. Rev. E. 95, (2017), 023113](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.95.023113)
 * [6] A. Lotfian, E. Roohi, Radiometric flow in periodically patterned channels: fluid physics and improved configurations, [Journal of Fluid Mechanics(2019), 860, 544-576](https://doi.org/10.1017/jfm.2018.880)
+* [7] S. Chen, C. Zhang, L. Zhu, Z. Guo, A unified implicit scheme for kinetic model equations. Part I. Memory reduction technique, [Science Bulletin, 62 (2016) 119–129](https://doi.org/10.1016/j.scib.2016.12.010)
