@@ -25,6 +25,15 @@ An OpenFOAM solver for the Boltzmann model equations using discrete unified gas 
 * 4.1    gcc/intel
 * 6.0,   gcc
 
+This updated version should also be compatible with:
+
+* 7.x, gcc
+* 8.x, gcc
+* 9.x, gcc
+* 10.x, gcc
+* 11.x, gcc
+* OpenFOAM Foundation versions (v2206, v2212, v2306)
+
 ```bash
 of240 # change the version code according your OF installation
 cd dugksFoam/src

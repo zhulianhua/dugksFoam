@@ -6,13 +6,24 @@ set -x
 HEADERFOLDER=../inc/FoamDefs/$WM_PROJECT_VERSION
 mkdir -p $HEADERFOLDER
 HEADERPATH=$HEADERFOLDER/foam_defs.h
-IFS='.' read -ra FOAM_VERSION <<< "$WM_PROJECT_VERSION"
+
+# Handle different version formats
+if [[ $WM_PROJECT_VERSION == v* ]]; then
+    # Handle OpenFOAM Foundation versions like v2206, v2212, v2306
+    FOAM_MAJOR=${WM_PROJECT_VERSION}
+    FOAM_MINOR=""
+else
+    # Handle OpenFOAM.org versions like 2.4.0, 3.0.1, etc.
+    IFS='.' read -ra FOAM_VERSION <<< "$WM_PROJECT_VERSION"
+    FOAM_MAJOR=${FOAM_VERSION[0]}
+    FOAM_MINOR=${FOAM_VERSION[1]}
+fi
 
 if [ ! -f $HEADERPATH  ]
 then
     touch $HEADERPATH
-    echo "#define FOAM_MAJOR ${FOAM_VERSION[0]}" > $HEADERPATH
-    echo "#define FOAM_MINOR ${FOAM_VERSION[1]}" >> $HEADERPATH
+    echo "#define FOAM_MAJOR ${FOAM_MAJOR}" > $HEADERPATH
+    echo "#define FOAM_MINOR ${FOAM_MINOR}" >> $HEADERPATH
 fi
 
 (wmake libso fvDVM && wmake)
