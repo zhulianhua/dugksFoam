@@ -1,0 +1,2 @@
+#define FOAM_MAJOR 2306
+#define FOAM_MINOR 

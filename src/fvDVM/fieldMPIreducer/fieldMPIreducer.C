@@ -3,6 +3,9 @@
 
 #if FOAM_MAJOR <= 3
     #define BOUNDARY_FIELD_REF boundaryField()
+#elif FOAM_MAJOR >= 2000
+    // For OpenFOAM Foundation versions (v2206, etc.)
+    #define BOUNDARY_FIELD_REF boundaryFieldRef()
 #else
     #define BOUNDARY_FIELD_REF boundaryFieldRef()
 #endif

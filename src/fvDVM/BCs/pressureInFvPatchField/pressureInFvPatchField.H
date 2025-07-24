@@ -172,6 +172,8 @@ public:
             (
 #if FOAM_MAJOR <= 4
                 const Pstream::commsTypes commsType=Pstream::blocking
+#elif FOAM_MAJOR <= 1812
+                const Pstream::commsTypes commsType=Pstream::commsTypes::blocking
 #else
                 const Pstream::commsTypes commsType=Pstream::commsTypes::blocking
 #endif
